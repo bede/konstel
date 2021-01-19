@@ -45,13 +45,13 @@ def sars2_nuc_fasta_to_spike_prot(fasta_path):
     return spike_aa
 
 def sars2_nuc_to_spike_hash(nt_sequence):
-    '''Returns hash of SARS-CoV-2 spike sequence contained in DNA string'''
-    return hash_prot(sars2_nuc_to_spike_prot(nt_sequence))
+    '''Returns qualified hash of SARS-CoV-2 spike sequence contained in DNA string'''
+    return 'S:' + hash_prot(sars2_nuc_to_spike_prot(nt_sequence))
 
 
 def sars2_nuc_fasta_to_spike_hash(fasta_path):
-    '''Returns hash of SARS-CoV-2 spike sequence contained in DNA fasta'''
-    return hash_prot(sars2_nuc_fasta_to_spike_prot(fasta_path))
+    '''Returns qualified hash of SARS-CoV-2 spike sequence contained in DNA fasta'''
+    return 'S:' + hash_prot(sars2_nuc_fasta_to_spike_prot(fasta_path))
 
 
 

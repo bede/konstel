@@ -9,4 +9,4 @@ def test_hash_prot_with_stripped_chars():
 
 def test_sars2_nuc_fasta_to_spike_hash():
 	hash = konstel.sars2_nuc_fasta_to_spike_hash('tests/data/test.fa')
-	assert hash == 'mfcqn6mh3bnp7vv6eirptvbqik5c65ip'
+	assert hash == 'S:mfcqn6mh3bnp7vv6eirptvbqik5c65ip'
