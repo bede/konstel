@@ -50,7 +50,8 @@ def prot_to_phoneme(sequence):
 
 def sars2_nuc_to_spike_prot(nt_sequence):
     '''Returns translated SARS-CoV-2 spike contained in DNA string'''
-    seq = Seq(nt_sequence)
+    nt_sequence_fmt = nt_sequence.translate(str.maketrans('', '', ' \n\t\r'))
+    seq = Seq(nt_sequence_fmt)
     s_start_seq = 'atgtttgtttttctt'  # First 5 codons of Wuhan-Hu-1
     s_end_seq = 'ttacattacacataa'  # Last 5 codons of Wuhan-Hu-1
     s_start_pos = str(seq).lower().index(s_start_seq)
