@@ -8,7 +8,7 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 
 
-def hash_dna(sequence):
+def hash_dna_b32(sequence):
     '''Returns encoded hash of string comprising only characters {A,C,G,T,U}'''
     alphabet = set(list('ACGTU'))
     sequence_fmt = sequence.upper().translate(str.maketrans('', '', ' \n\t\r'))
@@ -16,15 +16,6 @@ def hash_dna(sequence):
     h = hashlib.sha1(sequence_fmt.encode())
     h_b32 = base64.b32encode(h.digest()).decode().lower()
     return (h_b32)
-
-def hash_prot_b32(sequence):
-    '''Returns encoded hash of string comprising only unambiguous IUPAC amino acids'''
-    alphabet = set(list('ARNDCQEGHILKMFPSTWYV'))
-    sequence_fmt = sequence.upper().strip('*').translate(str.maketrans('', '', ' \n\t\r'))
-    assert(set(sequence_fmt).issubset(alphabet))
-    h = hashlib.sha1(sequence_fmt.encode())
-    h_b32 = base64.b32encode(h.digest()).decode().lower()
-    return h_b32
 
 def hash_prot_b10(sequence):
     '''Returns decimal hash of string comprising only unambiguous IUPAC amino acids'''
@@ -34,6 +25,15 @@ def hash_prot_b10(sequence):
     h = hashlib.sha1(sequence_fmt.encode())
     h_b10 = str(int(binascii.hexlify(h.digest()), 16))
     return h_b10
+
+def hash_prot_b32(sequence):
+    '''Returns encoded hash of string comprising only unambiguous IUPAC amino acids'''
+    alphabet = set(list('ARNDCQEGHILKMFPSTWYV'))
+    sequence_fmt = sequence.upper().strip('*').translate(str.maketrans('', '', ' \n\t\r'))
+    assert(set(sequence_fmt).issubset(alphabet))
+    h = hashlib.sha1(sequence_fmt.encode())
+    h_b32 = base64.b32encode(h.digest()).decode().lower()
+    return h_b32
 
 def prot_to_phoneme(sequence):
     h_b10 = hash_prot_b10(sequence)
@@ -77,8 +77,10 @@ def sars2_nuc_fasta_to_spike_hash(fasta_path):
 
 def main():
     fire.Fire({
-        'hash-dna': hash_dna,
-        'hash-prot': hash_prot_b32,
+        'hash-dna-b32': hash_dna_b32,
+        'hash-prot-b10': hash_prot_b10,
+        'hash-prot-b32': hash_prot_b32,
+        'prot_to_phoneme': prot_to_phoneme,
         'sars2-nuc-to-spike-prot': sars2_nuc_to_spike_prot,
         'sars2-nuc-fasta-to-spike-prot': sars2_nuc_fasta_to_spike_prot,
         'sars2-nuc-to-spike-hash': sars2_nuc_to_spike_hash,
