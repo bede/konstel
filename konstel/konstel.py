@@ -8,35 +8,48 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 
 
-def hash_dna_b32(sequence):
-    '''Returns encoded hash of string comprising only characters {A,C,G,T,U}'''
-    alphabet = set(list('ACGTU'))
-    sequence_fmt = sequence.upper().translate(str.maketrans('', '', ' \n\t\r'))
-    assert(set(sequence_fmt).issubset(alphabet))
-    h = hashlib.sha1(sequence_fmt.encode())
+def hash_b10(sequence):
+    '''Returns base10 hash from string'''
+    h = hashlib.sha1(sequence.encode())
+    h_b10 = str(int(binascii.hexlify(h.digest()), 16))
+    return h_b10
+
+def hash_b32(sequence):
+    '''Returns base32 hash from string'''
+    h = hashlib.sha1(sequence.encode())
     h_b32 = base64.b32encode(h.digest()).decode().lower()
     return (h_b32)
 
 def hash_prot_b10(sequence):
-    '''Returns decimal hash of string comprising only unambiguous IUPAC amino acids'''
+    '''Returns base10 hash of string comprising unambiguous IUPAC amino acids'''
     alphabet = set(list('ARNDCQEGHILKMFPSTWYV'))
     sequence_fmt = sequence.upper().strip('*').translate(str.maketrans('', '', ' \n\t\r'))
-    assert(set(sequence_fmt).issubset(alphabet))
-    h = hashlib.sha1(sequence_fmt.encode())
-    h_b10 = str(int(binascii.hexlify(h.digest()), 16))
-    return h_b10
+    assert(sequence_fmt != '' and set(sequence_fmt).issubset(alphabet))
+    return hash_b10(sequence_fmt)
 
 def hash_prot_b32(sequence):
-    '''Returns encoded hash of string comprising only unambiguous IUPAC amino acids'''
+    '''Returns base32 hash of string comprising unambiguous IUPAC amino acids'''
     alphabet = set(list('ARNDCQEGHILKMFPSTWYV'))
     sequence_fmt = sequence.upper().strip('*').translate(str.maketrans('', '', ' \n\t\r'))
-    assert(set(sequence_fmt).issubset(alphabet))
-    h = hashlib.sha1(sequence_fmt.encode())
-    h_b32 = base64.b32encode(h.digest()).decode().lower()
-    return h_b32
+    assert(sequence_fmt != '' and set(sequence_fmt).issubset(alphabet))
+    return hash_b32(sequence_fmt)
 
-def prot_to_phoneme(sequence):
-    h_b10 = hash_prot_b10(sequence)
+def hash_nuc_b10(sequence):
+    '''Returns base10 encoded hash of string comprising characters {A,C,G,T,U}'''
+    alphabet = set(list('ACGTU'))
+    sequence_fmt = sequence.upper().translate(str.maketrans('', '', ' \n\t\r'))
+    assert(sequence_fmt != '' and set(sequence_fmt).issubset(alphabet))
+    return hash_b10(sequence_fmt)
+
+def hash_nuc_b32(sequence):
+    '''Returns base32 encoded hash of string comprising characters {A,C,G,T,U}'''
+    alphabet = set(list('ACGTU'))
+    sequence_fmt = sequence.upper().translate(str.maketrans('', '', ' \n\t\r'))
+    assert(sequence_fmt != '' and set(sequence_fmt).issubset(alphabet))
+    return hash_b32(sequence_fmt)
+
+def phoneme_from_hash_b10(h_b10):
+    '''Returns phoneme from base10 hash'''
     vowel_map = dict(zip(map(str, range(10)), 'aeiou'*2))
     consonant_map = dict(zip(map(str, range(10)), 'fhklmprstv'))
     phoneme = ''
@@ -47,42 +60,98 @@ def prot_to_phoneme(sequence):
             phoneme += vowel_map[char]
     return phoneme
 
+def phoneme_generic(sequence):
+    '''Returns 8 character phoneme from string'''
+    return phoneme_from_hash_b10(hash_b10(sequence))
 
-def sars2_nuc_to_spike_prot(nt_sequence):
-    '''Returns translated SARS-CoV-2 spike contained in DNA string'''
-    nt_sequence_fmt = nt_sequence.translate(str.maketrans('', '', ' \n\t\r'))
-    seq = Seq(nt_sequence_fmt)
+def phoneme_prot(sequence):
+    '''Returns 8 character phoneme of string comprising unambiguous IUPAC amino acids'''
+    return phoneme_from_hash_b10(hash_prot_b10(sequence))
+
+def phoneme_nuc(sequence):
+    '''Returns 8 character phoneme of string comprising characters {A,C,G,T,U}'''
+    return phoneme_from_hash_b10(hash_nuc_b10(sequence))
+
+
+# ---------- Main library functions ----------
+
+
+def protein(sequence, hash_length=4):
+    '''Returns dict of IDs given a string comprising unambiguous IUPAC amino acids'''
+    h_b32 = hash_prot_b32(sequence)
+    phoneme = phoneme_prot(sequence)
+    return {'phoneme': phoneme,
+            'hash': h_b32[:hash_length],
+            'hash_full': h_b32,
+            'sequence': sequence}
+
+def nucleotide(sequence, hash_length=4):
+    '''Returns dict of IDs given a string comprising characters {A,C,G,T,U}'''
+    h_b32 = hash_nuc_b32(sequence)
+    phoneme = phoneme_nuc(sequence)
+    return {'phoneme': phoneme,
+            'hash': h_b32[:hash_length],
+            'hash_full': h_b32,
+            'sequence': sequence}
+
+def generic(sequence, hash_length=4):
+    '''Returns dict of IDs given a string'''
+    h_b32 = hash_b32(sequence)
+    phoneme = phoneme_generic(sequence)
+    return {'phoneme': phoneme,
+            'hash': h_b32[:hash_length],
+            'hash_full': h_b32,
+            'sequence': sequence}
+
+
+# ---------- SARS-CoV-2 functions ----------
+
+
+def sars2_nuc_to_spike_prot(nuc_sequence):
+    '''Returns translated SARS-CoV-2 spike contained in nucleotide string'''
+    nuc_sequence_fmt = nuc_sequence.translate(str.maketrans('', '', ' \n\t\r'))
+    seq = Seq(nuc_sequence_fmt)
     s_start_seq = 'atgtttgtttttctt'  # First 5 codons of Wuhan-Hu-1
     s_end_seq = 'ttacattacacataa'  # Last 5 codons of Wuhan-Hu-1
     s_start_pos = str(seq).lower().index(s_start_seq)
     s_end_pos = str(seq).lower().index(s_end_seq) + len(s_end_seq)
-    spike_nt = seq[s_start_pos:s_end_pos]
-    spike_aa = str(spike_nt.ungap().translate()).strip('*')
-    return spike_aa
+    spike_nucl = seq[s_start_pos:s_end_pos]
+    spike_prot = str(spike_nucl.ungap().translate()).strip('*')
+    return spike_prot
 
 def sars2_nuc_fasta_to_spike_prot(fasta_path):
-    '''Returns translated SARS-CoV-2 spike contained in DNA fasta'''
+    '''Returns translated SARS-CoV-2 spike contained in nucleotide fasta'''
     record = SeqIO.read(fasta_path, 'fasta')
-    spike_aa = sars2_nuc_to_spike_prot(str(record.seq))
-    return spike_aa
+    spike_prot = sars2_nuc_to_spike_prot(str(record.seq))
+    return spike_prot
 
-def sars2_nuc_to_spike_hash(nt_sequence):
-    '''Returns qualified hash of SARS-CoV-2 spike sequence contained in DNA string'''
-    return 'S:' + hash_prot_b32(sars2_nuc_to_spike_prot(nt_sequence))
+def sars2_spike_from_nuc(nuc_sequence, hash_length=4):
+    '''Returns hash of SARS-CoV-2 spike sequence contained in nucleotide string'''
+    prot_sequence = sars2_nuc_to_spike_prot(nuc_sequence)
+    h_b32 = hash_prot_b32(prot_sequence)
+    phoneme = phoneme_prot(prot_sequence)
+    return {
+        'phoneme': phoneme,
+        'hash': h_b32[:hash_length],
+        'hash_full': h_b32,
+        'sequence': prot_sequence}
 
-def sars2_nuc_fasta_to_spike_hash(fasta_path):
-    '''Returns qualified hash of SARS-CoV-2 spike sequence contained in DNA fasta'''
-    return 'S:' + hash_prot_b32(sars2_nuc_fasta_to_spike_prot(fasta_path))
+def sars2_spike_from_nuc_fasta(fasta_path, hash_length=4):
+    '''Returns dict of IDs of SARS-CoV-2 spike sequence contained in nucleotide fasta'''
+    prot_sequence = sars2_nuc_fasta_to_spike_prot(fasta_path)
+    h_b32 = hash_prot_b32(prot_sequence)
+    phoneme = phoneme_prot(prot_sequence)
+    return {
+        'phoneme': phoneme,
+        'hash': h_b32[:hash_length],
+        'hash_full': h_b32,
+        'sequence': prot_sequence}
 
 
 def main():
     fire.Fire({
-        'hash-dna-b32': hash_dna_b32,
-        'hash-prot-b10': hash_prot_b10,
-        'hash-prot-b32': hash_prot_b32,
-        'prot_to_phoneme': prot_to_phoneme,
-        'sars2-nuc-to-spike-prot': sars2_nuc_to_spike_prot,
-        'sars2-nuc-fasta-to-spike-prot': sars2_nuc_fasta_to_spike_prot,
-        'sars2-nuc-to-spike-hash': sars2_nuc_to_spike_hash,
-        'sars2-nuc-fasta-to-spike-hash': sars2_nuc_fasta_to_spike_hash
-    })
+        'protein': protein,
+        'nucleotide': nucleotide,
+        'generic': generic,
+        'sars2-spike-from-nuc': sars2_spike_from_nuc,
+        'sars2-spike-from-nuc-fasta': sars2_spike_from_nuc_fasta})
