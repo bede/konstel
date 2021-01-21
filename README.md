@@ -1,6 +1,6 @@
 # Konstel(lations)
 
-CLI and Python library underlying the [web service](https://konstel.ew.r.appspot.com/) for creating hash-based identifiers (e.g. `S:mfcq`) for distinct SARS-CoV-2 spike protein sequences, or indeed any protein or DNA sequence of interest. For my proposal and rationale, please read my [blog post](https://log.bede.im/2021/01/19/covid-hashes).
+CLI and Python library underlying the [web service](https://konstel.ew.r.appspot.com/) for creating short hash-based identifiers (e.g. `S:mfcq` or `S:papoheme`) for distinct SARS-CoV-2 spike protein sequences, or indeed any protein or nucleotide sequence of interest. For my proposal and rationale, please read my [blog post](https://log.bede.im/2021/01/19/covid-hashes).
 
 
 
