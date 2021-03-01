@@ -1,0 +1,29 @@
+scheme:
+  name: sars-cov-2-s
+  aliases: [sars2-s]
+  version: 0.1.0
+  input:
+    protein:
+      types: [string, fasta, fasta_file]
+      preprocessing:
+        strip_whitespace: True
+        strip_characters: ['*']
+        remove_whitespace: True
+        remove_characters: []
+      illegal_characters: ['-']  # Redundant since we are using an alphabet
+      description: SARS-CoV-2 spike protein sequence
+      alphabet: protein
+    genome:
+      handler: 'sars_cov_2_s_genome'
+      target: protein
+  algorithm: sha256
+  output:
+    hash:
+      encoding: base32
+      length: 4
+      include_complete: True
+      prefix: 'S:'
+    phoneme:
+      encoding: phoneme
+      length: 8
+      prefix: 'S:'
