@@ -1,0 +1,33 @@
+example:
+  description: Example description
+  alias: an-example
+  version: 0.1.0
+  input:
+    protein:
+      description: SARS-CoV-2 spike protein sequence
+      alphabet: protein
+      input_format:
+        - string
+        - fasta
+        - fasta-file
+      preprocessing:
+        strip_fasta_header: True
+        strip_whitespace: True
+        strip_characters:
+          - '*'
+        remove_whitespace: True
+        remove_characters:  # Redundant
+        case: lower
+      illegal_characters:
+        - '-'  # Redundant since we are using an alphabet
+  algorithm: sha128
+  output:
+    hash:
+      encoding: base32
+      length: 4
+      include_complete: True
+      prefix: 'S:'
+    phoneme:
+      encoding: phoneme_b10
+      length: 8
+      prefix: 'S:'

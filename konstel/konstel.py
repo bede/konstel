@@ -1,11 +1,64 @@
+import os
 import base64
 import hashlib
 import binascii
 
+from pathlib import Path
+
+from konstel.res import *
+
 import fire
+import strictyaml
 
 from Bio import SeqIO
 from Bio.Seq import Seq
+
+
+
+
+
+def prepare_input(input, spec):
+    if spec['remove_whitespace']:
+        s = input.translate(str.maketrans('', '', ' \n\t\r'))
+
+
+
+
+def test(scheme, string=None, file=None, format=None):
+    library_yaml = '\n'.join([p.read_text() for p in Path('schemes').glob('*.yaml')])
+    library = strictyaml.load(library_yaml)
+    
+
+
+    aliases_schemes = {**{k: k for k in library.data},
+                       **{v['alias']: k for k, v in library.data.items()}}
+    scheme = aliases_schemes[scheme]
+    print(f"Using scheme {scheme}")
+
+
+    for k, v in library[scheme]['input'].items():
+        file_formats = library.data[scheme]['input'][k]['formats']
+        print(type(file_formats))
+        if file and not file_format:
+            if len(file_formats == 1):
+                file_format = file_formats[0]
+            else:
+                raise RunTimeError('Unspecified file format')
+        if file:
+            res.file_formats['fasta'](input)
+
+
+
+
+
+        # prepare_input(input, library[scheme]['input'][k])
+
+    # print(library[scheme]['input'])
+
+
+
+
+
 
 
 def hash_b10(sequence):
@@ -155,4 +208,5 @@ def main():
         'nucleotide': nucleotide,
         'generic': generic,
         'sars2-spike-from-nuc': sars2_spike_from_nuc,
-        'sars2-spike-from-nuc-fasta': sars2_spike_from_nuc_fasta})
+        'sars2-spike-from-nuc-fasta': sars2_spike_from_nuc_fasta,
+        'test': test})

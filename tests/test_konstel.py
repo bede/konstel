@@ -20,3 +20,6 @@ def phoneme_prot():
 def test_generic():
 	result = konstel.generic('ZEE')
 	assert result['phoneme'] == 'hikasulo'
+
+
+# Tests needed
