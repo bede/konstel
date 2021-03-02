@@ -32,12 +32,16 @@ def validate(string, spec):
             raise RuntimeError(f'Validation failed: max_length')
     return True
 
+def make_hash(string, hash_func):
+    h = hash_func(string.encode())
+    return h.hexdigest()
+
 
 def test(scheme, string=None, file=None, format=None):
     library_yaml = '\n'.join([p.read_text() for p in Path('schemes').glob('*.yaml')])
     library = strictyaml.load(library_yaml).data
 
-    # Validate chosen scheme, directive, format, string and file
+    # Validate chosen scheme, directive, format, string, file, hash algorithm
     scheme, _, directive = scheme.partition('.')
     if scheme not in library:
         raise RuntimeError(f'Unrecognised scheme {scheme}')
@@ -57,15 +61,23 @@ def test(scheme, string=None, file=None, format=None):
         raise RuntimeError(f'Specify either a string or a file path')
     if not string and not file:
         raise RuntimeError(f'Unspecified string or file path')
+    if file and not os.path.exists(file):
+        raise RuntimeError(f'File {file} not found ')
+
+    hash_algorithm = library[scheme]['algorithm']
 
     if file:
-        string = file_handlers[format](file)
-    
-    prepared = prepare(string, library[scheme]['directives'][directive]['prepare'])
-    validated = validate(prepared, library[scheme]['directives'][directive]['validate'])
-    hashed = hash()
+        string = Path(file).read_text()
+    string = format_funcs[format](string)
 
+    prepared_string = prepare(string, library[scheme]['directives'][directive]['prepare'])
+    is_valid = validate(prepared_string, library[scheme]['directives'][directive]['validate'])
+    hash_raw = make_hash(prepared_string, hash_funcs[hash_algorithm])
+    print(hash_raw)
 
+def validate_scheme():
+    if hash_algorithm not in hash_funcs:
+        raise RuntimeError(f'Unrecognised hash function {hash_algorithm}')
 
 
 

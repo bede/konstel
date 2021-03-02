@@ -23,7 +23,7 @@ sars-cov-2-s-legacy:  # cannot contain '.'
         - fasta
       prepare:
         custom_function: True
-  algorithm: sha128
+  algorithm: sha1
   outputs:
     hash:
       encoding: base32
