@@ -23,3 +23,7 @@ def test_generic():
 
 
 # Tests needed
+
+# exceptions
+# konstel test sars-cov-2-s-legac
+# konstel test sars-cov-2-s-legacy.x

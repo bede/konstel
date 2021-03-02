@@ -15,45 +15,56 @@ from Bio.Seq import Seq
 
 
 
+def prepare(string, spec):
+    if 'remove_whitespace' in spec:
+        string = string.translate(str.maketrans('', '', ' \n\t\r'))
+    if 'strip_characters' in spec:
+        string = string.strip(''.join(spec['strip_characters']))
+    return string
 
 
-def prepare_input(input, spec):
-    if spec['remove_whitespace']:
-        s = input.translate(str.maketrans('', '', ' \n\t\r'))
-
-
+def validate(string, spec):
+    if 'min_length' in spec:
+        if len(string) < int(spec['min_length']):
+            raise RuntimeError(f'Validation failed: min_length')
+    if 'max_length' in spec:
+        if len(string) > int(spec['max_length']):
+            raise RuntimeError(f'Validation failed: max_length')
+    return True
 
 
 def test(scheme, string=None, file=None, format=None):
     library_yaml = '\n'.join([p.read_text() for p in Path('schemes').glob('*.yaml')])
-    library = strictyaml.load(library_yaml)
+    library = strictyaml.load(library_yaml).data
+
+    # Validate chosen scheme, directive, format, string and file
+    scheme, _, directive = scheme.partition('.')
+    if scheme not in library:
+        raise RuntimeError(f'Unrecognised scheme {scheme}')
+    if not directive:
+        if len(library[scheme]['directives']) == 1:  # One option
+            directive = next(iter(library[scheme]['directives']))
+        else:
+            raise RuntimeError(f'Unspecified directive for scheme {scheme}')
+    if directive not in library[scheme]['directives']:
+        raise RuntimeError(f'Unrecognised directive {directive} for scheme {scheme}')
+    if not format:
+        if len(library[scheme]['directives'][directive]['formats']) == 1:
+            format = next(iter(library[scheme]['directives'][directive]['formats']))
+        else:
+            raise RuntimeError(f'Unspecified format for directive {directive} of scheme {scheme}')
+    if string and file:
+        raise RuntimeError(f'Specify either a string or a file path')
+    if not string and not file:
+        raise RuntimeError(f'Unspecified string or file path')
+
+    if file:
+        string = file_handlers[format](file)
     
+    prepared = prepare(string, library[scheme]['directives'][directive]['prepare'])
+    validated = validate(prepared, library[scheme]['directives'][directive]['validate'])
+    hashed = hash()
 
-
-    aliases_schemes = {**{k: k for k in library.data},
-                       **{v['alias']: k for k, v in library.data.items()}}
-    scheme = aliases_schemes[scheme]
-    print(f"Using scheme {scheme}")
-
-
-    for k, v in library[scheme]['input'].items():
-        file_formats = library.data[scheme]['input'][k]['formats']
-        print(type(file_formats))
-        if file and not file_format:
-            if len(file_formats == 1):
-                file_format = file_formats[0]
-            else:
-                raise RunTimeError('Unspecified file format')
-        if file:
-            res.file_formats['fasta'](input)
-
-
-
-
-
-        # prepare_input(input, library[scheme]['input'][k])
-
-    # print(library[scheme]['input'])
 
 
 

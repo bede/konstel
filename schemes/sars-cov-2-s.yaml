@@ -2,27 +2,29 @@ sars-cov-2-s-legacy:  # cannot contain '.'
   description: Phonemic and base32 identifiers for SARS-CoV-2 spike protein sequences
   alias: sars2-s-legacy
   version: 0.1.0
-  input:
+  directives:
     protein:
       description: SARS-CoV-2 spike protein sequence
       class: protein
       formats:
         - fasta  # Single fasta record, with or without header
       prepare:
-        remove_whitespace: True
+        # remove_whitespace: True
         strip_characters:
           - '*'  # Remove terminal stops
       validate:
-        - min_length: 1250
-        - max_length: 1300
+        min_length: 1200
+        max_length: 1300
     genome:
       description: SARS-CoV-2 genomic sequence containing complete spike gene
       class: dna-ambiguous
       target: protein
-      containers:
+      formats:
         - fasta
+      prepare:
+        custom_function: True
   algorithm: sha128
-  output:
+  outputs:
     hash:
       encoding: base32
       length: 4

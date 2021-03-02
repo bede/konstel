@@ -2,7 +2,7 @@
 # remove terminal stop codons
 
 from Bio import SeqIO
-	
+
 
 alphabets = {
 	'dna': 'ACGT',
@@ -18,10 +18,10 @@ alphabets = {
 
 
 def fasta(path):
-	return str(SeqIO.read('fasta').seq)
+	return str(SeqIO.read(path, 'fasta').seq).upper()
 
 
-file_formats = {
+file_handlers = {
 	'fasta': fasta
 }
 
