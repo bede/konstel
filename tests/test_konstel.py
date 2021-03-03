@@ -27,3 +27,6 @@ def test_generic():
 # exceptions
 # konstel test sars-cov-2-s-legac
 # konstel test sars-cov-2-s-legacy.x
+
+
+# konstel test sars-cov-2-s-b10.protein --file tests/data/spike.prot.fa

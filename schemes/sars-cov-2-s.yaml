@@ -1,7 +1,7 @@
-sars-cov-2-s-legacy:  # cannot contain '.'
+sars-cov-2-s-b10:  # cannot contain '.'
   description: Phonemic and base32 identifiers for SARS-CoV-2 spike protein sequences
-  alias: sars2-s-legacy
-  version: 0.1.0
+  alias: sars2-s-b10
+  version: 1.0.0
   directives:
     protein:
       description: SARS-CoV-2 spike protein sequence
@@ -24,13 +24,14 @@ sars-cov-2-s-legacy:  # cannot contain '.'
       prepare:
         custom_function: True
   algorithm: sha1
-  outputs:
+  encodings:
     hash:
-      encoding: base32
+      type: base32
       length: 4
-      include_complete: True
       prefix: 'S:'
+      include_full: True
     phoneme:
-      encoding: phoneme_b10
+      type: phoneme_b10
       length: 8
       prefix: 'S:'
+      include_full: False

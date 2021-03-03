@@ -5,13 +5,16 @@ import binascii
 
 from pathlib import Path
 
-from konstel.res import *
-
 import fire
 import strictyaml
 
 from Bio import SeqIO
 from Bio.Seq import Seq
+
+from konstel.res import alphabets
+import konstel.classes as classes
+import konstel.formats as formats
+import konstel.encodings as encodings
 
 
 
@@ -32,9 +35,15 @@ def validate(string, spec):
             raise RuntimeError(f'Validation failed: max_length')
     return True
 
-def make_hash(string, hash_func):
-    h = hash_func(string.encode())
-    return h.hexdigest()
+
+def make_hash(string, algorithm):
+    Hash = getattr(hashlib, algorithm)(string.encode())
+    return Hash
+
+
+def output(Hash, spec):
+    raw_encodings = {n: getattr(encodings, m['type'])(Hash) for n, m in spec.items()}
+    return raw_encodings
 
 
 def test(scheme, string=None, file=None, format=None):
@@ -64,20 +73,21 @@ def test(scheme, string=None, file=None, format=None):
     if file and not os.path.exists(file):
         raise RuntimeError(f'File {file} not found ')
 
-    hash_algorithm = library[scheme]['algorithm']
-
     if file:
         string = Path(file).read_text()
-    string = format_funcs[format](string)
+    string = getattr(formats, format)(string)
 
     prepared_string = prepare(string, library[scheme]['directives'][directive]['prepare'])
     is_valid = validate(prepared_string, library[scheme]['directives'][directive]['validate'])
-    hash_raw = make_hash(prepared_string, hash_funcs[hash_algorithm])
-    print(hash_raw)
+    Hash = make_hash(prepared_string, library[scheme]['algorithm'])
+    # print(hash_raw, library[scheme]['encodings'])
+    outputs = output(Hash, library[scheme]['encodings'])
+    print(outputs)
 
-def validate_scheme():
-    if hash_algorithm not in hash_funcs:
-        raise RuntimeError(f'Unrecognised hash function {hash_algorithm}')
+
+# def validate_scheme():
+#     if hash_algorithm not in hash_funcs:
+#         raise RuntimeError(f'Unrecognised hash function {hash_algorithm}')
 
 
 
