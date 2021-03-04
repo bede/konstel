@@ -6,17 +6,17 @@ import binascii
 from pathlib import Path
 
 import fire
-import strictyaml
 
 from Bio import SeqIO
 from Bio.Seq import Seq
 
 from konstel.res import alphabets
+import konstel.schema as schema 
 import konstel.classes as classes
 import konstel.formats as formats
 import konstel.encodings as encodings
 
-
+        
 
 def prepare(string, spec):
     if 'remove_whitespace' in spec:
@@ -42,16 +42,24 @@ def make_hash(string, algorithm):
 
 
 def output(Hash, spec):
-    raw_encodings = {n: getattr(encodings, m['type'])(Hash) for n, m in spec.items()}
-    return raw_encodings
+    encodings_raw = {n: getattr(encodings, m['type'])(Hash) for n, m in spec.items()}
+    encodings_fmt = {}
+    for name, encoding_raw in encodings_raw.items():
+        length = int(spec[name]['length']) if 'length' in spec[name] else len(encoding_raw)
+        prefix = spec[name]['prefix'] if 'prefix' in spec[name] else ''
+        encodings_fmt[name] = f"{prefix}{encoding_raw[:length]}"
+        if spec[name].get('include_full'):
+            encodings_fmt[f'{name}_full'] = f"{prefix}{encoding_raw}"
+    return encodings_fmt
 
 
-def test(scheme, string=None, file=None, format=None):
-    library_yaml = '\n'.join([p.read_text() for p in Path('schemes').glob('*.yaml')])
-    library = strictyaml.load(library_yaml).data
+def gen(scheme, string=None, file=None, format=None):
+    scheme, _, directive = scheme.partition('.')
+    yaml_text = Path(f'schemes/{scheme}.yaml').read_text()
+    library = schema.load_scheme(yaml_text).data
+    # print(library)
 
     # Validate chosen scheme, directive, format, string, file, hash algorithm
-    scheme, _, directive = scheme.partition('.')
     if scheme not in library:
         raise RuntimeError(f'Unrecognised scheme {scheme}')
     if not directive:
@@ -242,4 +250,4 @@ def main():
         'generic': generic,
         'sars2-spike-from-nuc': sars2_spike_from_nuc,
         'sars2-spike-from-nuc-fasta': sars2_spike_from_nuc_fasta,
-        'test': test})
+        'gen': gen})

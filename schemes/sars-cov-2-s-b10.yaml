@@ -9,7 +9,6 @@ sars-cov-2-s-b10:  # cannot contain '.'
       formats:
         - fasta  # Single fasta record, with or without header
       prepare:
-        # remove_whitespace: True
         strip_characters:
           - '*'  # Remove terminal stops
       validate:
@@ -28,10 +27,11 @@ sars-cov-2-s-b10:  # cannot contain '.'
     hash:
       type: base32
       length: 4
-      prefix: 'S:'
       include_full: True
+      prefix: 'S:'
     phoneme:
       type: phoneme_b10
       length: 8
-      prefix: 'S:'
       include_full: False
+      prefix: 'S:'
+
