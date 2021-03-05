@@ -32,7 +32,7 @@ def load_scheme(yaml_text):
                     'length': Int(),
                     'include_full': Bool(),
                     Optional('prefix'): Str(),
-                    Optional('custom_function'): Bool(),
+                    Optional('custom_function', default=False): Bool(),
                 })
             )
         })
