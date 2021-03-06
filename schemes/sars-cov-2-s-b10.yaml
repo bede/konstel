@@ -21,7 +21,7 @@ sars-cov-2-s-b10:  # cannot contain '.'
       formats:
         - fasta
       prepare:
-        custom_function: True
+        function: True
   algorithm: sha1
   encodings:
     hash:

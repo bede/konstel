@@ -1,4 +1,22 @@
-from strictyaml import load, Bool, Int, Str, Seq, Map, MapPattern, Optional, YAMLValidationError
+import hashlib
+import inspect
+
+from strictyaml import load, Bool, Int, Str, Seq, Map, Enum, MapPattern, Optional, YAMLValidationError
+
+from konstel import formats
+from konstel import encodings
+
+
+
+ALGORITHMS = hashlib.algorithms_guaranteed
+FORMATS = [o[0] for o in inspect.getmembers(formats, inspect.isfunction)]
+ENCODINGS = [o[0] for o in inspect.getmembers(encodings, inspect.isfunction)]
+
+
+# For when classes are implemented
+# classes = [obj for name, obj in inspect.getmembers(sys.modules[__name__], inspect.isclass)
+#           if obj.__module__ is __name__]
+# [m[0] for m in inspect.getmembers(my_module, inspect.isclass) if m[1].__module__ == 'my_module']
 
 
 def load_scheme(yaml_text):
@@ -11,28 +29,27 @@ def load_scheme(yaml_text):
                 Str(), Map({
                     'description': Str(),
                     'class': Str(),
-                    'formats': Seq(Str()),
+                    'formats': Seq(Enum(FORMATS)),
                     Optional('prepare'): Map({
                         Optional('strip_characters'): Seq(Str()),
-                        Optional('remove_whitespace'): Bool(),
-                        Optional('custom_function'): Bool(),
+                        Optional('function', default=False): Bool(),
                     }),
                     Optional('validate'): Map({
                         'min_length': Int(),
                         'max_length': Int(),
-                        Optional('custom_function'): Bool(),
+                        Optional('function', default=False): Bool(),
                     }),
                     Optional('target'): Str()
                 }),
             ),
-            'algorithm': Str(),
+            'algorithm': Enum(ALGORITHMS),
             'encodings': MapPattern(
                 Str(), Map({
-                    'type': Str(),
+                    'type': Enum(ENCODINGS),
                     'length': Int(),
-                    'include_full': Bool(),
                     Optional('prefix'): Str(),
-                    Optional('custom_function', default=False): Bool(),
+                    Optional('include_full', default=False): Bool(),
+                    Optional('function', default=False): Bool(),
                 })
             )
         })

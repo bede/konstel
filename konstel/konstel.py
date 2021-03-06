@@ -57,7 +57,6 @@ def gen(scheme, string=None, file=None, format=None):
     scheme, _, directive = scheme.partition('.')
     yaml_text = Path(f'schemes/{scheme}.yaml').read_text()
     library = schema.load_scheme(yaml_text).data
-    # print(library)
 
     # Validate chosen scheme, directive, format, string, file, hash algorithm
     if scheme not in library:
@@ -88,9 +87,9 @@ def gen(scheme, string=None, file=None, format=None):
     prepared_string = prepare(string, library[scheme]['directives'][directive]['prepare'])
     is_valid = validate(prepared_string, library[scheme]['directives'][directive]['validate'])
     Hash = make_hash(prepared_string, library[scheme]['algorithm'])
-    # print(hash_raw, library[scheme]['encodings'])
     outputs = output(Hash, library[scheme]['encodings'])
-    print(outputs)
+
+    return outputs
 
 
 # def validate_scheme():
@@ -244,6 +243,7 @@ def sars2_spike_from_nuc_fasta(fasta_path, hash_length=4):
 
 
 def main():
+    fire.core.Display = lambda lines, out: print(*lines, file=out) # Stop Fire using pager
     fire.Fire({
         'protein': protein,
         'nucleotide': nucleotide,
