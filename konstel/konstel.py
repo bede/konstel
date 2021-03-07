@@ -54,40 +54,47 @@ def output(Hash, spec):
 
 
 def gen(scheme, string=None, file=None, format=None):
+    ''''''
     scheme, _, directive = scheme.partition('.')
-    yaml_text = Path(f'schemes/{scheme}.yaml').read_text()
-    library = schema.load_scheme(yaml_text).data
 
-    # Validate chosen scheme, directive, format, string, file, hash algorithm
-    if scheme not in library:
-        raise RuntimeError(f'Unrecognised scheme {scheme}')
+    # Load scheme specification
+    yaml_path = Path(f'schemes/{scheme}.yaml')
+    if not os.path.exists(yaml_path):
+        raise FileNotFoundError(f'Failed to open specification for scheme {scheme}')
+    spec = schema.load_scheme(yaml_path.read_text()).data
+        
+
+    # Validate presence and unambiguity of scheme, directive and format
+    if scheme not in spec:
+        raise RuntimeError(f'Unrecognised scheme {scheme}.')
     if not directive:
-        if len(library[scheme]['directives']) == 1:  # One option
-            directive = next(iter(library[scheme]['directives']))
+        if len(spec[scheme]['directives']) == 1:  # One option
+            directive = next(iter(spec[scheme]['directives']))
         else:
-            raise RuntimeError(f'Unspecified directive for scheme {scheme}')
-    if directive not in library[scheme]['directives']:
+            raise RuntimeError(f'Ambiguous directive for scheme {scheme}')
+    if directive not in spec[scheme]['directives']:
         raise RuntimeError(f'Unrecognised directive {directive} for scheme {scheme}')
     if not format:
-        if len(library[scheme]['directives'][directive]['formats']) == 1:
-            format = next(iter(library[scheme]['directives'][directive]['formats']))
+        if len(spec[scheme]['directives'][directive]['formats']) == 1:
+            format = next(iter(spec[scheme]['directives'][directive]['formats']))
         else:
-            raise RuntimeError(f'Unspecified format for directive {directive} of scheme {scheme}')
+            raise RuntimeError(f'Ambiguous format for directive {directive} of scheme {scheme}')
+    
+    # Validate string and file arguments, read file contents into string
     if string and file:
         raise RuntimeError(f'Specify either a string or a file path')
     if not string and not file:
         raise RuntimeError(f'Unspecified string or file path')
     if file and not os.path.exists(file):
-        raise RuntimeError(f'File {file} not found ')
-
+        raise FileNotFoundError(f'File {file} not found ')
     if file:
         string = Path(file).read_text()
     string = getattr(formats, format)(string)
 
-    prepared_string = prepare(string, library[scheme]['directives'][directive]['prepare'])
-    is_valid = validate(prepared_string, library[scheme]['directives'][directive]['validate'])
-    Hash = make_hash(prepared_string, library[scheme]['algorithm'])
-    outputs = output(Hash, library[scheme]['encodings'])
+    prepared_string = prepare(string, spec[scheme]['directives'][directive]['prepare'])
+    is_valid = validate(prepared_string, spec[scheme]['directives'][directive]['validate'])
+    Hash = make_hash(prepared_string, spec[scheme]['algorithm'])
+    outputs = output(Hash, spec[scheme]['encodings'])
 
     return outputs
 
@@ -95,9 +102,6 @@ def gen(scheme, string=None, file=None, format=None):
 # def validate_scheme():
 #     if hash_algorithm not in hash_funcs:
 #         raise RuntimeError(f'Unrecognised hash function {hash_algorithm}')
-
-
-
 
 
 
