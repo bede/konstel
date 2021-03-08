@@ -1,4 +1,7 @@
-def sars2_nuc_to_spike_prot(nuc_sequence):
+from Bio import SeqIO
+from Bio.Seq import Seq
+
+def sars_cov_2_s_b10_genome(nuc_sequence):
     '''Returns translated SARS-CoV-2 spike contained in nucleotide string'''
     nuc_sequence_fmt = nuc_sequence.translate(str.maketrans('', '', ' \n\t\r'))
     seq = Seq(nuc_sequence_fmt)
@@ -8,5 +11,4 @@ def sars2_nuc_to_spike_prot(nuc_sequence):
     s_end_pos = str(seq).lower().index(s_end_seq) + len(s_end_seq)
     spike_nucl = seq[s_start_pos:s_end_pos]
     spike_prot = str(spike_nucl.ungap().translate()).strip('*')
-    assert(1200 < len(spike_prot) < 1300)  # SARS-CoV-2 is ~1270AAs long 
     return spike_prot

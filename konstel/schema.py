@@ -11,6 +11,7 @@ from konstel import encodings
 ALGORITHMS = hashlib.algorithms_available
 FORMATS = [o[0] for o in inspect.getmembers(formats, inspect.isfunction)]
 ENCODINGS = [o[0] for o in inspect.getmembers(encodings, inspect.isfunction)]
+OUTPUT_TYPES = {'dict', 'tab', 'table'}
 
 
 # For when classes are implemented
@@ -50,7 +51,7 @@ def load_scheme(yaml_text):
                 Str(), Map({
                     'type': Enum(ENCODINGS),
                     'length': Int(),
-                    Optional('prefix'): Str(),
+                    Optional('prefix', default=''): Str(),
                     Optional('include_full', default=False): Bool(),
                     Optional('function', default=False): Bool(),
                 })

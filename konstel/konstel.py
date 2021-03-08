@@ -1,4 +1,5 @@
 import os
+import sys
 import base64
 import hashlib
 import binascii
@@ -51,8 +52,8 @@ def output(Hash, spec):
     encodings_raw = {n: getattr(encodings, m['type'])(Hash) for n, m in spec.items()}
     encodings_fmt = {}
     for name, encoding_raw in encodings_raw.items():
+        prefix = spec[name]['prefix']
         length = spec[name]['length'] if 'length' in spec[name] else len(encoding_raw)
-        prefix = spec[name]['prefix'] if 'prefix' in spec[name] else ''
         encodings_fmt[name] = f"{prefix}{encoding_raw[:length]}"
         if spec[name].get('include_full'):
             encodings_fmt[f'{name}_full'] = f"{prefix}{encoding_raw}"
@@ -65,21 +66,42 @@ def initial_directive(string, scheme, directive, spec):
         string = prepare(string, spec[scheme]['directives'][directive]['prepare'])
     if 'validate' in spec[scheme]['directives'][directive]:
         validate(string, spec[scheme]['directives'][directive]['validate'])
+    if spec[scheme]['directives'][directive]['helper']:
+        helper_name = f"{scheme}_{directive}".replace('-','_')
+        helper = getattr(helpers, helper_name)
+        string = helper(string)
     return string
 
 
 def final_directive(string, scheme, directive, spec):
-    ''''''
+    '''Returns dict of encodings for given string, scheme, directive and specification'''
     string = initial_directive(string, scheme, directive, spec)
     Hash = make_hash(string, spec[scheme]['algorithm'])
     outputs = output(Hash, spec[scheme]['encodings'])
     return outputs
 
 
-def gen(scheme, string=None, file=None, format=None):
+def format_output(outputs, output_type):
+    '''Returns string format'''
+    if output_type == 'dict':
+        return str(outputs)
+    elif output_type == 'tab':
+        outputs_fmt = ''
+        for k, v in outputs.items():
+            outputs_fmt += f'{k}\t{v}\n'
+        return outputs_fmt
+    elif output_type == 'table':
+        outputs_fmt = ''
+        for k, v in outputs.items():
+            outputs_fmt += f'{k:<20} {v:<15}\n'
+        return outputs_fmt
+
+
+def gen(scheme, string=None, file=None, format=None, output='dict', noprefix=False):
     ''''''
     PACKAGE_PATH = os.path.dirname(os.path.dirname(__file__))
     scheme, _, directive = scheme.partition('.')
+    print(f'Using scheme {scheme}.{directive}', file=sys.stderr)
 
     # Load scheme specification
     yaml_path = Path(f'{PACKAGE_PATH}/schemes/{scheme}.yaml')
@@ -114,13 +136,20 @@ def gen(scheme, string=None, file=None, format=None):
         string = Path(file).read_text()
     string = getattr(formats, format)(string)
 
-    # Handle two chained directives
+    # Validate output
+    if not output in schema.OUTPUT_TYPES:
+        raise RuntimeError(f'Unrecognised output type {output}. Options: {schema.OUTPUT_TYPES}')
+
+    # 
+
+    # Handle up to two chained directives
     target = spec[scheme]['directives'][directive].get('target')
     if target:
-        string = initial_directive(string, scheme, target, spec)
+        string = initial_directive(string, scheme, directive, spec)
+        directive = target
     outputs = final_directive(string, scheme, directive, spec)
-    
-    return outputs
+
+    return format_output(outputs, output)
 
 
 # def validate_scheme():
