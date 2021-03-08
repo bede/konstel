@@ -20,6 +20,9 @@ ENCODINGS = [o[0] for o in inspect.getmembers(encodings, inspect.isfunction)]
 
 
 def load_scheme(yaml_text):
+    '''
+    Some optional keys have enforced default values, otherwise use dict.get()
+    '''
     schema = MapPattern(
         Str(), Map({
             'description': Str(),
@@ -31,15 +34,15 @@ def load_scheme(yaml_text):
                     'class': Str(),
                     'formats': Seq(Enum(FORMATS)),
                     Optional('prepare'): Map({
-                        Optional('strip_characters'): Seq(Str()),
-                        Optional('function', default=False): Bool(),
+                        Optional('remove_whitespace', default=False): Bool(),
+                        Optional('strip_characters', default=['']): Seq(Str()),
                     }),
                     Optional('validate'): Map({
-                        'min_length': Int(),
-                        'max_length': Int(),
-                        Optional('function', default=False): Bool(),
+                        Optional('min_length'): Int(),
+                        Optional('max_length'): Int(),
                     }),
-                    Optional('target'): Str()
+                    Optional('target'): Str(),
+                    Optional('helper', default=False): Bool()
                 }),
             ),
             'algorithm': Enum(ALGORITHMS),
@@ -55,4 +58,3 @@ def load_scheme(yaml_text):
         })
     )
     return load(yaml_text, schema)
-    

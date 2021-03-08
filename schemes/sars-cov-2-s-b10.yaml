@@ -16,12 +16,11 @@ sars-cov-2-s-b10:  # cannot contain '.'
         max_length: 1300
     genome:
       description: SARS-CoV-2 genomic sequence containing complete spike gene
-      class: dna-ambiguous
+      class: dna_ambiguous
       target: protein
       formats:
         - fasta
-      prepare:
-        function: True
+      helper: True
   algorithm: sha1
   encodings:
     hash:
@@ -32,6 +31,5 @@ sars-cov-2-s-b10:  # cannot contain '.'
     phoneme:
       type: phoneme_b10
       length: 8
-      include_full: False
       prefix: 'S:'
 

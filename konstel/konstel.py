@@ -12,40 +12,46 @@ from Bio.Seq import Seq
 
 from konstel.res import alphabets
 import konstel.schema as schema 
+
 import konstel.classes as classes
 import konstel.formats as formats
 import konstel.encodings as encodings
+import konstel.helpers as helpers
 
         
 
 def prepare(string, spec):
-    if 'remove_whitespace' in spec:
+    ''''''
+    if spec['remove_whitespace']:
         string = string.translate(str.maketrans('', '', ' \n\t\r'))
-    if 'strip_characters' in spec:
+    if any(spec['strip_characters']):  # any() since schema default [''] is truthy
         string = string.strip(''.join(spec['strip_characters']))
     return string
 
 
 def validate(string, spec):
-    if 'min_length' in spec:
-        if len(string) < int(spec['min_length']):
+    ''''''
+    if spec['min_length']:
+        if len(string) < spec['min_length']:
             raise RuntimeError(f'Validation failed: min_length')
-    if 'max_length' in spec:
-        if len(string) > int(spec['max_length']):
+    if spec['max_length']:
+        if len(string) > spec['max_length']:
             raise RuntimeError(f'Validation failed: max_length')
     return True
 
 
 def make_hash(string, algorithm):
+    ''''''
     Hash = getattr(hashlib, algorithm)(string.encode())
     return Hash
 
 
 def output(Hash, spec):
+    ''''''
     encodings_raw = {n: getattr(encodings, m['type'])(Hash) for n, m in spec.items()}
     encodings_fmt = {}
     for name, encoding_raw in encodings_raw.items():
-        length = int(spec[name]['length']) if 'length' in spec[name] else len(encoding_raw)
+        length = spec[name]['length'] if 'length' in spec[name] else len(encoding_raw)
         prefix = spec[name]['prefix'] if 'prefix' in spec[name] else ''
         encodings_fmt[name] = f"{prefix}{encoding_raw[:length]}"
         if spec[name].get('include_full'):
@@ -53,16 +59,33 @@ def output(Hash, spec):
     return encodings_fmt
 
 
+def initial_directive(string, scheme, directive, spec):
+    ''''''
+    if 'prepare' in spec[scheme]['directives'][directive]:
+        string = prepare(string, spec[scheme]['directives'][directive]['prepare'])
+    if 'validate' in spec[scheme]['directives'][directive]:
+        validate(string, spec[scheme]['directives'][directive]['validate'])
+    return string
+
+
+def final_directive(string, scheme, directive, spec):
+    ''''''
+    string = initial_directive(string, scheme, directive, spec)
+    Hash = make_hash(string, spec[scheme]['algorithm'])
+    outputs = output(Hash, spec[scheme]['encodings'])
+    return outputs
+
+
 def gen(scheme, string=None, file=None, format=None):
     ''''''
+    PACKAGE_PATH = os.path.dirname(os.path.dirname(__file__))
     scheme, _, directive = scheme.partition('.')
 
     # Load scheme specification
-    yaml_path = Path(f'schemes/{scheme}.yaml')
+    yaml_path = Path(f'{PACKAGE_PATH}/schemes/{scheme}.yaml')
     if not os.path.exists(yaml_path):
         raise FileNotFoundError(f'Failed to open specification for scheme {scheme}')
     spec = schema.load_scheme(yaml_path.read_text()).data
-        
 
     # Validate presence and unambiguity of scheme, directive and format
     if scheme not in spec:
@@ -91,11 +114,12 @@ def gen(scheme, string=None, file=None, format=None):
         string = Path(file).read_text()
     string = getattr(formats, format)(string)
 
-    prepared_string = prepare(string, spec[scheme]['directives'][directive]['prepare'])
-    is_valid = validate(prepared_string, spec[scheme]['directives'][directive]['validate'])
-    Hash = make_hash(prepared_string, spec[scheme]['algorithm'])
-    outputs = output(Hash, spec[scheme]['encodings'])
-
+    # Handle two chained directives
+    target = spec[scheme]['directives'][directive].get('target')
+    if target:
+        string = initial_directive(string, scheme, target, spec)
+    outputs = final_directive(string, scheme, directive, spec)
+    
     return outputs
 
 
@@ -103,6 +127,7 @@ def gen(scheme, string=None, file=None, format=None):
 #     if hash_algorithm not in hash_funcs:
 #         raise RuntimeError(f'Unrecognised hash function {hash_algorithm}')
 
+# Validate target graph
 
 
 def hash_b10(sequence):
