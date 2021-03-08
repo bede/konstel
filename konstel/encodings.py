@@ -2,6 +2,7 @@ import base64
 import binascii
 
 
+
 def base32(Hash):
 	return base64.b32encode(Hash.digest()).decode().lower()
 

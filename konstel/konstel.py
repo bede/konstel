@@ -98,16 +98,16 @@ def format_output(outputs, output_type):
         return outputs_fmt
 
 
-def gen(scheme: 'scheme name; specify {scheme}.{directive} if multiple directives are defined',
+def generate(scheme: 'scheme name; specify {scheme}.{directive} if multiple directives are defined',
         string: 'input string' = '',
         file: 'input file path' = '',
         format: 'input format; mandatory if more than one format in scheme' = '',
         output: 'output format' = 'dict',
         hide_prefix: 'hide encoding prefix; overrides scheme' = False):
-    ''''''
+    '''Generate identifier(s) for input string or file path according to specified scheme'''
     PACKAGE_PATH = os.path.dirname(os.path.dirname(__file__))
     scheme, _, directive = scheme.partition('.')
-    print(f'Using scheme {scheme}.{directive}', file=sys.stderr)
+    print(f'Using scheme {scheme} ({directive})', file=sys.stderr)
 
     # Load scheme specification
     yaml_path = Path(f'{PACKAGE_PATH}/schemes/{scheme}.yaml')
@@ -122,7 +122,8 @@ def gen(scheme: 'scheme name; specify {scheme}.{directive} if multiple directive
         if len(spec[scheme]['directives']) == 1:  # One option
             directive = next(iter(spec[scheme]['directives']))
         else:
-            raise RuntimeError(f'Ambiguous directive for scheme {scheme}')
+            raise RuntimeError(f"Ambiguous directive for scheme {scheme}. "
+                               f"Options: {', '.join(spec[scheme]['directives'].keys())}")
     if directive not in spec[scheme]['directives']:
         raise RuntimeError(f'Unrecognised directive {directive} for scheme {scheme}')
     if not format:
@@ -305,7 +306,8 @@ def sars2_spike_from_nuc_fasta(fasta_path, hash_length=4):
 
 
 def main():
-    argh.dispatch_commands([gen])
+    argh.dispatch_command(generate)
+    # argh.dispatch_commands([gen])
     # fire.core.Display = lambda lines, out: print(*lines, file=out) # Stop Fire using pager
     # fire.Fire({
     #     'protein': protein,

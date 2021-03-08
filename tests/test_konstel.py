@@ -3,13 +3,13 @@ import pytest
 from konstel import konstel
 
 
-def test_gen_prot():
-	result = konstel.gen('sars-cov-2-s-b10.protein', file='tests/data/spike.prot.fa')
+def test_generate_prot():
+	result = konstel.generate('sars-cov-2-s-b10.protein', file='tests/data/spike.prot.fa')
 	print(result)
 	assert result['phoneme'] == 'S:papoheme'
 
-def test_gen_nuc():
-	result = konstel.gen('sars-cov-2-s-b10.genome', file='tests/data/test.fa')
+def test_generate_nuc():
+	result = konstel.generate('sars-cov-2-s-b10.genome', file='tests/data/test.fa')
 	print(result)
 	assert result['phoneme'] == 'S:papoheme'
 
