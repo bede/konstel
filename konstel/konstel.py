@@ -6,11 +6,12 @@ import binascii
 
 from pathlib import Path
 
-import fire
+import argh
 
 from Bio import SeqIO
 from Bio.Seq import Seq
 
+from konstel import __version__
 from konstel.res import alphabets
 import konstel.schema as schema 
 
@@ -84,7 +85,7 @@ def final_directive(string, scheme, directive, spec):
 def format_output(outputs, output_type):
     '''Returns string format'''
     if output_type == 'dict':
-        return str(outputs)
+        return outputs
     elif output_type == 'tab':
         outputs_fmt = ''
         for k, v in outputs.items():
@@ -97,7 +98,12 @@ def format_output(outputs, output_type):
         return outputs_fmt
 
 
-def gen(scheme, string=None, file=None, format=None, output='dict', noprefix=False):
+def gen(scheme: 'scheme name; specify {scheme}.{directive} if multiple directives are defined',
+        string: 'input string' = '',
+        file: 'input file path' = '',
+        format: 'input format; mandatory if more than one format in scheme' = '',
+        output: 'output format' = 'dict',
+        hide_prefix: 'hide encoding prefix; overrides scheme' = False):
     ''''''
     PACKAGE_PATH = os.path.dirname(os.path.dirname(__file__))
     scheme, _, directive = scheme.partition('.')
@@ -139,8 +145,6 @@ def gen(scheme, string=None, file=None, format=None, output='dict', noprefix=Fal
     # Validate output
     if not output in schema.OUTPUT_TYPES:
         raise RuntimeError(f'Unrecognised output type {output}. Options: {schema.OUTPUT_TYPES}')
-
-    # 
 
     # Handle up to two chained directives
     target = spec[scheme]['directives'][directive].get('target')
@@ -301,11 +305,12 @@ def sars2_spike_from_nuc_fasta(fasta_path, hash_length=4):
 
 
 def main():
-    fire.core.Display = lambda lines, out: print(*lines, file=out) # Stop Fire using pager
-    fire.Fire({
-        'protein': protein,
-        'nucleotide': nucleotide,
-        'generic': generic,
-        'sars2-spike-from-nuc': sars2_spike_from_nuc,
-        'sars2-spike-from-nuc-fasta': sars2_spike_from_nuc_fasta,
-        'gen': gen})
+    argh.dispatch_commands([gen])
+    # fire.core.Display = lambda lines, out: print(*lines, file=out) # Stop Fire using pager
+    # fire.Fire({
+    #     'protein': protein,
+    #     'nucleotide': nucleotide,
+    #     'generic': generic,
+    #     'sars2-spike-from-nuc': sars2_spike_from_nuc,
+    #     'sars2-spike-from-nuc-fasta': sars2_spike_from_nuc_fasta,
+    #     'gen': gen})
