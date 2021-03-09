@@ -41,18 +41,18 @@ def validate(string, spec):
     return True
 
 
-def make_hash(string, algorithm):
+def generate_hash(string, algorithm):
     ''''''
     Hash = getattr(hashlib, algorithm)(string.encode())
     return Hash
 
 
-def output(Hash, spec):
+def generate_output(Hash, spec, no_prefix):
     ''''''
     encodings_raw = {n: getattr(encodings, m['type'])(Hash) for n, m in spec.items()}
     encodings_fmt = {}
     for name, encoding_raw in encodings_raw.items():
-        prefix = spec[name]['prefix']
+        prefix = spec[name]['prefix'] if not no_prefix else ''
         length = spec[name]['length'] if 'length' in spec[name] else len(encoding_raw)
         encodings_fmt[name] = f"{prefix}{encoding_raw[:length]}"
         if spec[name].get('include_full'):
@@ -73,11 +73,11 @@ def initial_directive(string, scheme, directive, spec):
     return string
 
 
-def final_directive(string, scheme, directive, spec):
+def final_directive(string, scheme, directive, spec, no_prefix):
     '''Returns dict of encodings for given string, scheme, directive and specification'''
     string = initial_directive(string, scheme, directive, spec)
-    Hash = make_hash(string, spec[scheme]['algorithm'])
-    outputs = output(Hash, spec[scheme]['encodings'])
+    Hash = generate_hash(string, spec[scheme]['algorithm'])
+    outputs = generate_output(Hash, spec[scheme]['encodings'], no_prefix)
     return outputs
 
 
@@ -102,7 +102,7 @@ def generate(scheme: 'scheme name; specify {scheme}.{directive} if multiple dire
         file: 'input file path' = '',
         format: 'input format; mandatory if more than one format in scheme' = '',
         output: 'output format' = 'dict',
-        hide_prefix: 'hide encoding prefix; overrides scheme' = False):
+        no_prefix: 'hide encoding prefix; overrides scheme' = False):
     '''Generate identifier(s) for input string or file path according to specified scheme'''
     PACKAGE_PATH = os.path.dirname(os.path.dirname(__file__))
     scheme, _, directive = scheme.partition('.')
@@ -151,7 +151,7 @@ def generate(scheme: 'scheme name; specify {scheme}.{directive} if multiple dire
     if target:
         string = initial_directive(string, scheme, directive, spec)
         directive = target
-    outputs = final_directive(string, scheme, directive, spec)
+    outputs = final_directive(string, scheme, directive, spec, no_prefix)
 
     return format_output(outputs, output)
 
