@@ -20,7 +20,6 @@ import konstel.formats as formats
 import konstel.encodings as encodings
 import konstel.helpers as helpers
 
-        
 
 def prepare(string, spec):
     ''''''

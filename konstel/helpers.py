@@ -2,8 +2,7 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 
 
-
-def sars_cov_2_s_b10_genome(nuc_sequence):
+def sars_cov_2_s_genome(nuc_sequence):
     '''Returns translated SARS-CoV-2 spike sequence contained in nucleotide string'''
     nuc_sequence_fmt = nuc_sequence.translate(str.maketrans('', '', ' \n\t\r'))
     seq = Seq(nuc_sequence_fmt)
@@ -14,3 +13,6 @@ def sars_cov_2_s_b10_genome(nuc_sequence):
     spike_nucl = seq[s_start_pos:s_end_pos]
     spike_prot = str(spike_nucl.ungap().translate()).strip('*')
     return spike_prot
+
+def sars_cov_2_s_legacy_genome(nuc_sequence):
+    return sars_cov_2_s_genome(nuc_sequence)

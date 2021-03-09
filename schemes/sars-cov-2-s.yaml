@@ -1,4 +1,4 @@
-sars-cov-2-s-b10:  # cannot contain '.'
+sars-cov-2-s:  # cannot contain '.'
   description: Phonemic and base32 identifiers for SARS-CoV-2 spike protein sequences
   alias: sars2-s-b10
   version: 1.0.0
@@ -29,7 +29,7 @@ sars-cov-2-s-b10:  # cannot contain '.'
       include_full: True
       prefix: 'S:'
     phoneme:
-      type: phoneme_b10
-      length: 8
+      type: phoneme_16_4
+      length: 7
       prefix: 'S:'
 
