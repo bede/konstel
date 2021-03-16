@@ -56,7 +56,7 @@ def generate_output(Hash, spec, no_prefix):
         length = spec[name]['length'] if 'length' in spec[name] else len(encoding_raw)
         encodings_fmt[name] = f"{prefix}{encoding_raw[:length]}"
         if spec[name].get('include_full'):
-            encodings_fmt[f'{name}_full'] = f"{prefix}{encoding_raw}"
+            encodings_fmt[f'{name}-full'] = f"{prefix}{encoding_raw}"
     return encodings_fmt
 
 

@@ -32,4 +32,7 @@ sars-cov-2-s:  # cannot contain '.'
       type: phoneme_16_4
       length: 7
       prefix: 'S:'
-
+    phoneme-legacy:
+      type: phoneme_10_5
+      length: 8
+      prefix: 'S:'

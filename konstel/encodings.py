@@ -40,3 +40,31 @@ def phoneme_16_4(Hash):
         c, v = int(window[:4], 2), int(window[4:], 2)
         phoneme += f'{consonant_map[c]}{vowel_map[v]}'
     return phoneme
+
+
+def phoneme_bits(seq_hash, result_len=None):
+    '''
+    Needs integration
+    Maps 16 consonants and 4 vowels to hash
+    Information density: 3 bits per character
+    '''
+    import itertools
+    from math import log2
+    phonemes = [''.join(i) for i in itertools.product('bdfghjklmnprstvz', 'aiou')]
+    phoneme_bit_size = log2(len(phonemes))
+    assert phoneme_bit_size.is_integer(), 'Must have a power of two number of phonemes'
+
+    hash_b2 = int(seq_hash.hexdigest(), 16)
+
+    if result_len is None:
+        result_len = int(8 * seq_hash.digest_size / phoneme_bit_size)
+    front_offset = int(8 * seq_hash.digest_size - phoneme_bit_size)
+    mask = (2 ** int(phoneme_bit_size) - 1) << front_offset
+
+    word = ''
+    for _ in range(result_len):
+        phoneme_num = (hash_b2 & mask) >> front_offset
+        word += phonemes[phoneme_num]
+        hash_b2 = hash_b2 << int(phoneme_bit_size)
+        
+    return word
