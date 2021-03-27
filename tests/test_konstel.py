@@ -6,15 +6,15 @@ from konstel import konstel
 def test_sars2_generate_prot():
 	result = konstel.generate('sars-cov-2-s.protein', file='tests/data/spike.prot.fa')
 	print(result)
-	assert result['phoneme'] == 'S:sapapag'
-	assert result['phoneme-legacy'] == 'S:papoheme'
+	assert result['word'] == 'S:sapapag'
+	assert result['word-legacy'] == 'S:papoheme'
 
 
 def test_sars2_generate_nuc():
 	result = konstel.generate('sars-cov-2-s.genome', file='tests/data/test.fa')
 	print(result)
-	assert result['phoneme'] == 'S:sapapag'
-	assert result['phoneme-legacy'] == 'S:papoheme'	
+	assert result['word'] == 'S:sapapag'
+	assert result['word-legacy'] == 'S:papoheme'	
 
 
 # def test_hash_prot_with_stripped_chars():
