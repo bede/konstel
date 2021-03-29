@@ -2,7 +2,6 @@ import os
 import sys
 import pathlib
 import hashlib
-import functools
 
 import argh
 
@@ -39,6 +38,19 @@ def validate(string, spec):
     return True
 
 
+def run_directive(string, scheme, directive, spec):
+    ''''''
+    if 'prepare' in spec[scheme]['directives'][directive]:
+        string = prepare(string, spec[scheme]['directives'][directive]['prepare'])
+    if 'validate' in spec[scheme]['directives'][directive]:
+        validate(string, spec[scheme]['directives'][directive]['validate'])
+    if spec[scheme]['directives'][directive]['helper']:
+        helper_name = f"{scheme}_{directive}".replace('-','_')
+        helper = getattr(helpers, helper_name)
+        string = helper(string)
+    return string
+
+
 def generate_hash(string, algorithm):
     ''''''
     string_hash = getattr(hashlib, algorithm)(string.encode())
@@ -56,27 +68,6 @@ def generate_output(string_hash, spec, no_prefix):
         if spec[name].get('include_full'):
             encodings_fmt[f'{name}-full'] = f"{prefix}{encoding_raw}"
     return encodings_fmt
-
-
-def initial_directive(string, scheme, directive, spec):
-    ''''''
-    if 'prepare' in spec[scheme]['directives'][directive]:
-        string = prepare(string, spec[scheme]['directives'][directive]['prepare'])
-    if 'validate' in spec[scheme]['directives'][directive]:
-        validate(string, spec[scheme]['directives'][directive]['validate'])
-    if spec[scheme]['directives'][directive]['helper']:
-        helper_name = f"{scheme}_{directive}".replace('-','_')
-        helper = getattr(helpers, helper_name)
-        string = helper(string)
-    return string
-
-
-def final_directive(string, scheme, directive, spec, no_prefix):
-    '''Returns dict of encodings for given string, scheme, directive and specification'''
-    string = initial_directive(string, scheme, directive, spec)
-    string_hash = generate_hash(string, spec[scheme]['algorithm'])
-    outputs = generate_output(string_hash, spec[scheme]['encodings'], no_prefix)
-    return outputs
 
 
 def format_output(outputs, output_type):
@@ -144,15 +135,19 @@ def generate(scheme: 'scheme name; specify {scheme}.{directive} if multiple dire
     if not output in schema.OUTPUT_TYPES:
         raise RuntimeError(f'Unrecognised output type {output}. Options: {schema.OUTPUT_TYPES}')
 
-    # Handle up to two chained directives
+    # Handle DAG of directives
+    dag = [directive]
     target = spec[scheme]['directives'][directive].get('target')
     if target:
-        string = initial_directive(string, scheme, directive, spec)
-        directive = target
-    outputs = final_directive(string, scheme, directive, spec, no_prefix)
-
-
-
+        g = {s: spec[scheme]['directives'][s].get('target') for s in spec[scheme]['directives']}
+        d = target
+        while d:
+            dag.append(d)
+            d = g[d]
+    for d in dag:
+        string = run_directive(string, scheme, d, spec)
+    string_hash = generate_hash(string, spec[scheme]['algorithm'])
+    outputs = generate_output(string_hash, spec[scheme]['encodings'], no_prefix)
 
     return format_output(outputs, output)
 
@@ -162,6 +157,8 @@ def generate(scheme: 'scheme name; specify {scheme}.{directive} if multiple dire
 #         raise RuntimeError(f'Unrecognised hash function {hash_algorithm}')
 
 # Validate target graph
+
+# can't have helper and hash function
 
 
 def hash_b10(sequence):
