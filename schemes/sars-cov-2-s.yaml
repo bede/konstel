@@ -1,6 +1,5 @@
 sars-cov-2-s:  # cannot contain '.'
   description: Phonemic and base32 identifiers for SARS-CoV-2 spike protein sequences
-  alias: sars2-s
   version: 1.0.0
   directives:
     protein:
@@ -28,7 +27,7 @@ sars-cov-2-s:  # cannot contain '.'
       length: 4
       include_full: True
       prefix: 'S:'
-    word:
+    id:
       type: phonemes_16_4
       length: 7
       prefix: 'S:'
@@ -36,7 +35,7 @@ sars-cov-2-s:  # cannot contain '.'
     #   type: phonemes_16_4_bits
     #   length: 7
     #   prefix: 'S:'
-    word-legacy:
+    id-legacy:
       type: phonemes_10_5
       length: 8
       prefix: 'S:'

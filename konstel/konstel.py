@@ -1,10 +1,8 @@
 import os
 import sys
-import base64
+import pathlib
 import hashlib
-import binascii
-
-from pathlib import Path
+import functools
 
 import argh
 
@@ -43,13 +41,13 @@ def validate(string, spec):
 
 def generate_hash(string, algorithm):
     ''''''
-    Hash = getattr(hashlib, algorithm)(string.encode())
-    return Hash
+    string_hash = getattr(hashlib, algorithm)(string.encode())
+    return string_hash
 
 
-def generate_output(Hash, spec, no_prefix):
+def generate_output(string_hash, spec, no_prefix):
     ''''''
-    encodings_raw = {n: getattr(encodings, m['type'])(Hash) for n, m in spec.items()}
+    encodings_raw = {n: getattr(encodings, m['type'])(string_hash) for n, m in spec.items()}
     encodings_fmt = {}
     for name, encoding_raw in encodings_raw.items():
         prefix = spec[name]['prefix'] if not no_prefix else ''
@@ -76,8 +74,8 @@ def initial_directive(string, scheme, directive, spec):
 def final_directive(string, scheme, directive, spec, no_prefix):
     '''Returns dict of encodings for given string, scheme, directive and specification'''
     string = initial_directive(string, scheme, directive, spec)
-    Hash = generate_hash(string, spec[scheme]['algorithm'])
-    outputs = generate_output(Hash, spec[scheme]['encodings'], no_prefix)
+    string_hash = generate_hash(string, spec[scheme]['algorithm'])
+    outputs = generate_output(string_hash, spec[scheme]['encodings'], no_prefix)
     return outputs
 
 
@@ -109,7 +107,7 @@ def generate(scheme: 'scheme name; specify {scheme}.{directive} if multiple dire
     print(f'Using scheme {scheme} ({directive})', file=sys.stderr)
 
     # Load scheme specification
-    yaml_path = Path(f'{PACKAGE_PATH}/schemes/{scheme}.yaml')
+    yaml_path = pathlib.Path(f'{PACKAGE_PATH}/schemes/{scheme}.yaml')
     if not os.path.exists(yaml_path):
         raise FileNotFoundError(f'Failed to open specification for scheme {scheme}')
     spec = schema.load_scheme(yaml_path.read_text()).data
@@ -139,7 +137,7 @@ def generate(scheme: 'scheme name; specify {scheme}.{directive} if multiple dire
     if file and not os.path.exists(file):
         raise FileNotFoundError(f'File {file} not found ')
     if file:
-        string = Path(file).read_text()
+        string = pathlib.Path(file).read_text()
     string = getattr(formats, format)(string)
 
     # Validate output
@@ -152,6 +150,9 @@ def generate(scheme: 'scheme name; specify {scheme}.{directive} if multiple dire
         string = initial_directive(string, scheme, directive, spec)
         directive = target
     outputs = final_directive(string, scheme, directive, spec, no_prefix)
+
+
+
 
     return format_output(outputs, output)
 

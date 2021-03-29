@@ -1,27 +1,27 @@
 import base64
 
 
-def base32(seq_hash):
-    '''Returns lowercased and padding-stripped base32 encoding of a hashlib Hash instance'''
-    return base64.b32encode(seq_hash.digest()).decode().lower().rstrip('=')
+def base32(string_hash):
+    '''Returns lowercased and padding-stripped base32 encoding of a hashlib Hash'''
+    return base64.b32encode(string_hash.digest()).decode().lower().rstrip('=')
 
 
-def cbase32(seq_hash):
+def cbase32(string_hash):
     '''Returns lowercased cbase32 encoding of a hashlib Hash instance'''
-    hash_b32 = base32(seq_hash)
+    hash_b32 = base32(string_hash)
     base32_symbols = 'abcdefghijklmnopqrstuvwxyz234567'
     cbase32_symbols = '0123456789abcdefghjkmnpqrstvwxyz'
     base32_to_cbase32 = dict(zip(base32_symbols, cbase32_symbols))
     return ''.join([base32_to_cbase32[c] for c in hash_b32])
 
 
-def phonemes_10_5(seq_hash):
+def phonemes_10_5(string_hash):
     '''
-    Returns word comprising consonant-vowel phonemes from hashlib hash
+    Returns word comprising consonant-vowel phonemes from hashlib Hash
     Maps 10 consonants and 5 vowels to base10 encoded hash
     2.8 bits per character
     '''
-    hash_b10 = str(int(seq_hash.hexdigest(), 16))
+    hash_b10 = str(int(string_hash.hexdigest(), 16))
     vowel_map = dict(zip(map(str, range(10)), 'aeiou'*2))
     consonant_map = dict(zip(map(str, range(10)), 'fhklmprstv'))
     word = ''
@@ -33,13 +33,13 @@ def phonemes_10_5(seq_hash):
     return word
 
 
-def phonemes_16_4(seq_hash):
+def phonemes_16_4(string_hash):
     '''
-    Returns word comprising consonant-vowel phonemes from hashlib hash
+    Returns word comprising consonant-vowel phonemes from hashlib Hash
     Maps 16 consonants and 4 vowels to six bit windows of hash
     3 bits per character
     '''
-    hash_b2 = bin(int(seq_hash.hexdigest(), 16))[2:]  # Binary string from hex string
+    hash_b2 = bin(int(string_hash.hexdigest(), 16))[2:]  # Binary string from hex string
     vowel_map = dict(zip(range(4), 'aiou'))
     consonant_map = dict(zip(range(16), 'bdfghjklmnprstvz'))
     word = ''
@@ -52,9 +52,9 @@ def phonemes_16_4(seq_hash):
     return word
 
 
-def phonemes_16_4_bits(seq_hash, result_len=None):
+def phonemes_16_4_bits(string_hash, result_len=None):
     '''
-    Returns word comprising consonant-vowel phonemes from hashlib hash
+    Returns word comprising consonant-vowel phonemes from hashlib Hash
     Maps 16 consonants and 4 vowels to six bit windows of hash
     3 bits per character
     '''
@@ -64,11 +64,11 @@ def phonemes_16_4_bits(seq_hash, result_len=None):
     phoneme_bit_size = log2(len(phonemes))
     assert phoneme_bit_size.is_integer(), 'Must have a power of two number of phonemes'
 
-    hash_b2 = int(seq_hash.hexdigest(), 16)
+    hash_b2 = int(string_hash.hexdigest(), 16)
 
     if result_len is None:
-        result_len = int(8 * seq_hash.digest_size / phoneme_bit_size)
-    front_offset = int(8 * seq_hash.digest_size - phoneme_bit_size)
+        result_len = int(8 * string_hash.digest_size / phoneme_bit_size)
+    front_offset = int(8 * string_hash.digest_size - phoneme_bit_size)
     mask = (2 ** int(phoneme_bit_size) - 1) << front_offset
 
     word = ''
