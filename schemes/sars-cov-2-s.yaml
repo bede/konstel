@@ -4,7 +4,6 @@ sars-cov-2-s:  # cannot contain '.'
   directives:
     protein:
       description: SARS-CoV-2 spike protein sequence
-      class: protein
       formats:
         - fasta  # Single fasta record, with or without header
       prepare:
@@ -15,7 +14,6 @@ sars-cov-2-s:  # cannot contain '.'
         max_length: 1300
     genome:
       description: SARS-CoV-2 genomic sequence containing complete spike gene
-      class: dna-ambiguous
       target: protein
       formats:
         - fasta

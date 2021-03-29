@@ -1,0 +1,28 @@
+generic:  # cannot contain '.'
+  description: Phonemic and hash zbase32 identifiers for arbitrary biological sequences
+  version: 1.0.0
+  directives:
+    nucl:
+      formats:
+        - fasta  # Single fasta record, with or without header
+      validate:
+        alphabet: nucleotide
+    nucl-ambiguous:
+      formats:
+        - fasta
+      validate:
+        alphabet: nucleotide-ambiguous
+    prot:
+      formats:
+        - fasta
+      validate:
+        alphabet: protein
+  algorithm: sha1
+  encodings:
+    hash:
+      type: cbase32  # Crockford's base32
+      length: 6  # 30 bits
+      include_full: True
+    id:
+      type: phonemes_16_4
+      length: 10  # 30 bits

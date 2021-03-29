@@ -28,12 +28,13 @@ def prepare(string, spec):
 
 def validate(string, spec):
     ''''''
-    if spec['min_length']:
+    if 'min_length' in spec:
         if len(string) < spec['min_length']:
             raise RuntimeError(f'Validation failed: min_length')
-    if spec['max_length']:
+    if 'max_length' in spec:
         if len(string) > spec['max_length']:
             raise RuntimeError(f'Validation failed: max_length')
+    # Alphabet
     return True
 
 
@@ -56,12 +57,12 @@ def generate_hash(string, algorithm):
     return string_hash
 
 
-def generate_output(string_hash, spec, no_prefix):
+def generate_output(string_hash, spec, hide_prefix):
     ''''''
     encodings_raw = {n: getattr(encodings, m['type'])(string_hash) for n, m in spec.items()}
     encodings_fmt = {}
     for name, encoding_raw in encodings_raw.items():
-        prefix = spec[name]['prefix'] if not no_prefix else ''
+        prefix = spec[name]['prefix'] if not hide_prefix else ''
         length = spec[name]['length'] if 'length' in spec[name] else len(encoding_raw)
         encodings_fmt[name] = f"{prefix}{encoding_raw[:length]}"
         if spec[name].get('include_full'):
@@ -85,18 +86,19 @@ def format_output(outputs, output_type):
         return outputs_fmt
 
 
-@named('scheme')
-def generate_scheme(
-        scheme: 'scheme name; specify {scheme}.{directive} if multiple directives are defined',
-        string: 'input string' = '',
-        file: 'input file path' = '',
-        format: 'input format; mandatory if more than one format in scheme' = '',
-        output: 'output format' = 'dict',
-        no_prefix: 'hide encoding prefix; overrides scheme' = False):
-    '''Generate identifier(s) for input string or file path according to specified scheme'''
+@named('gen')
+def generate(
+    # scheme, file, format='', output='dict', hide_prefix=False
+    scheme: 'scheme name; use {scheme}.{directive} if scheme has multiple directives',
+    file: "input file path or '-' for stdin",
+    format: 'input format; mandatory if scheme has multiple formats' = '',
+    output: 'output format' = 'dict',
+    hide_prefix: 'hide encoding prefix; overrides scheme' = False):
+    '''Generate identifier(s) for input file path according to specified scheme'''
     PACKAGE_PATH = os.path.dirname(os.path.dirname(__file__))
     scheme, _, directive = scheme.partition('.')
-    print(f'Using scheme {scheme} ({directive})', file=sys.stderr)
+    
+
 
     # Load scheme specification
     yaml_path = pathlib.Path(f'{PACKAGE_PATH}/schemes/{scheme}.yaml')
@@ -121,15 +123,16 @@ def generate_scheme(
         else:
             raise RuntimeError(f'Ambiguous format for directive {directive} of scheme {scheme}')
     
-    # Validate string and file arguments, read file contents into string
-    if string and file:
-        raise RuntimeError(f'Specify either a string or a file path')
-    if not string and not file:
-        raise RuntimeError(f'Unspecified string or file path')
-    if file and not os.path.exists(file):
-        raise FileNotFoundError(f'File {file} not found ')
-    if file:
+    print(f"scheme: {scheme} ({directive}),"
+          f" input: {'stdin' if file == '-' else file}", file=sys.stderr)
+
+    # Validate, read and format input file or stdin
+    if file == '-':
+        string = sys.stdin.read().strip()
+    elif os.path.exists(file):
         string = pathlib.Path(file).read_text()
+    else:
+        raise FileNotFoundError(f'File {file} not found ')
     string = getattr(formats, format)(string)
 
     # Validate output
@@ -148,9 +151,20 @@ def generate_scheme(
     for d in dag:
         string = run_directive(string, scheme, d, spec)
     string_hash = generate_hash(string, spec[scheme]['algorithm'])
-    outputs = generate_output(string_hash, spec[scheme]['encodings'], no_prefix)
+    outputs = generate_output(string_hash, spec[scheme]['encodings'], hide_prefix)
 
     return format_output(outputs, output)
+
+
+# @named('scheme')
+# def cli_generate_scheme(
+#     scheme: 'scheme name; specify {scheme}.{directive} if multiple directives are defined',
+#     string: 'input string' = '',
+#     file: 'input file path' = '',
+#     format: 'input format; mandatory if more than one format in scheme' = '',
+#     output: 'output format' = 'dict',
+#     hide_prefix: 'hide encoding prefix; overrides scheme' = False):
+
 
 
 # def validate_scheme():
@@ -162,4 +176,4 @@ def generate_scheme(
 
 
 def main():
-    argh.dispatch_commands([generate_scheme])
+    argh.dispatch_commands([generate])

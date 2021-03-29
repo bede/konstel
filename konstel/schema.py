@@ -8,8 +8,9 @@ from konstel import encodings
 
 
 ALGORITHMS = hashlib.algorithms_available
-FORMATS = [o[0] for o in inspect.getmembers(formats, inspect.isfunction)]
+ALPHABETS = formats.alphabets.keys()
 ENCODINGS = [o[0] for o in inspect.getmembers(encodings, inspect.isfunction)]
+FORMATS = [o[0] for o in inspect.getmembers(formats, inspect.isfunction)]
 OUTPUT_TYPES = {'dict', 'tab', 'table'}
 
 
@@ -30,14 +31,14 @@ def load_scheme(yaml_text):
             'version': Str(),
             'directives': MapPattern(
                 Str(), Map({
-                    'description': Str(),
-                    'class': Str(),
+                    Optional('description'): Str(),
                     'formats': Seq(Enum(FORMATS)),
                     Optional('prepare'): Map({
                         Optional('remove_whitespace', default=False): Bool(),
                         Optional('strip_characters', default=['']): Seq(Str()),
                     }),
                     Optional('validate'): Map({
+                        Optional('alphabet'): Enum(ALPHABETS),
                         Optional('min_length'): Int(),
                         Optional('max_length'): Int(),
                     }),
