@@ -4,6 +4,7 @@ import pathlib
 import hashlib
 
 import argh
+from argh.decorators import named
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -85,8 +86,9 @@ def format_output(outputs, output_type):
             outputs_fmt += f'{k:<20} {v:<15}\n'
         return outputs_fmt
 
-
-def generate(scheme: 'scheme name; specify {scheme}.{directive} if multiple directives are defined',
+@named('scheme')
+def generate_scheme(
+        scheme: 'scheme name; specify {scheme}.{directive} if multiple directives are defined',
         string: 'input string' = '',
         file: 'input file path' = '',
         format: 'input format; mandatory if more than one format in scheme' = '',
@@ -303,8 +305,8 @@ def sars2_spike_from_nuc_fasta(fasta_path, hash_length=4):
 
 
 def main():
-    argh.dispatch_command(generate)
-    # argh.dispatch_commands([gen])
+    # argh.dispatch_command(generate)
+    argh.dispatch_commands([generate_scheme])
     # fire.core.Display = lambda lines, out: print(*lines, file=out) # Stop Fire using pager
     # fire.Fire({
     #     'protein': protein,
