@@ -9,14 +9,12 @@ from argh.decorators import named
 from Bio import SeqIO
 from Bio.Seq import Seq
 
-from konstel import __version__
-from konstel.res import alphabets
-import konstel.schema as schema 
-
+import konstel.schema as schema
 import konstel.classes as classes
 import konstel.formats as formats
-import konstel.encodings as encodings
 import konstel.helpers as helpers
+import konstel.encodings as encodings
+
 
 
 def prepare(string, spec):
@@ -86,6 +84,7 @@ def format_output(outputs, output_type):
             outputs_fmt += f'{k:<20} {v:<15}\n'
         return outputs_fmt
 
+
 @named('scheme')
 def generate_scheme(
         scheme: 'scheme name; specify {scheme}.{directive} if multiple directives are defined',
@@ -137,7 +136,7 @@ def generate_scheme(
     if not output in schema.OUTPUT_TYPES:
         raise RuntimeError(f'Unrecognised output type {output}. Options: {schema.OUTPUT_TYPES}')
 
-    # Handle DAG of directives
+    # Handle chained directives
     dag = [directive]
     target = spec[scheme]['directives'][directive].get('target')
     if target:
