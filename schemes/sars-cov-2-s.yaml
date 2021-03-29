@@ -15,7 +15,7 @@ sars-cov-2-s:  # cannot contain '.'
         max_length: 1300
     genome:
       description: SARS-CoV-2 genomic sequence containing complete spike gene
-      class: dna_ambiguous
+      class: dna-ambiguous
       target: protein
       formats:
         - fasta
@@ -31,11 +31,11 @@ sars-cov-2-s:  # cannot contain '.'
       type: phonemes_16_4
       length: 7
       prefix: 'S:'
-    # word-rod:
-    #   type: phonemes_16_4_bits
-    #   length: 7
-    #   prefix: 'S:'
     id-legacy:
       type: phonemes_10_5
       length: 8
+      prefix: 'S:'
+    id-rod:
+      type: phonemes_16_4_bits
+      length: 7
       prefix: 'S:'

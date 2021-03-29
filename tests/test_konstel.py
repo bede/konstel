@@ -11,7 +11,7 @@ def test_sars2_generate_prot():
 
 
 def test_sars2_generate_nuc():
-	result = konstel.generate('sars-cov-2-s.genome', file='tests/data/test.fa')
+	result = konstel.generate('sars-cov-2-s.genome', file='tests/data/spike.genome.fa')
 	print(result)
 	assert result['id'] == 'S:sapapag'
 	assert result['id-legacy'] == 'S:papoheme'	

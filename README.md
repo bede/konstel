@@ -18,17 +18,12 @@ pip install git+https://github.com/bede/konstel
 ### Command line
 
 ```
-$ konstel protein PEACE
-phoneme:   hosupuho
-hash:      6gtq
-hash_full: 6gtqivg444l3uvf6cy43pxyyjmvg3wpp
-sequence:  PEACE
+$ konstel scheme sars-cov-2-s.genome --file tests/data/spike.genome.fa --output table
+Using scheme sars-cov-2-s (genome)
+hash                 S:mfcq         
+hash-full            S:mfcqn6mh3bnp7vv6eirptvbqik5c65ip
+id                   S:sapapag           
 
-$ konstel sars2-spike-from-nuc-fasta genome.fa
-phoneme:   papoheme
-hash:      mfcq
-hash_full: mfcqn6mh3bnp7vv6eirptvbqik5c65ip
-sequence:  <truncated>
 ```
 
 
@@ -36,11 +31,7 @@ sequence:  <truncated>
 ### Python
 
 ```python
-from konstel import konstel
-
-konstel.protein('PEACE')
-{'phoneme': 'hosupuho', 'hash': '6gtq', 'hash_full': '6gtqivg444l3uvf6cy43pxyyjmvg3wpp', 'sequence': 'PEACE'}
-
-konstel.sars2_spike_from_nuc_fasta('tests/data/test.fa')
-{'phoneme': 'papoheme', 'hash': 'mfcq', 'hash_full': 'mfcqn6mh3bnp7vv6eirptvbqik5c65ip', 'sequence': '<truncated>'}
+>>> from konstel import konstel
+>>> konstel.generate_scheme('sars-cov-2-s.genome', file='tests/data/spike.genome.fa')
+{'hash': 'S:mfcq', 'hash-full': 'S:mfcqn6mh3bnp7vv6eirptvbqik5c65ip', 'id': 'S:sapapag'}
 ```
