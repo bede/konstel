@@ -10,7 +10,6 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 
 import konstel.schema as schema
-import konstel.classes as classes
 import konstel.formats as formats
 import konstel.helpers as helpers
 import konstel.encodings as encodings
@@ -28,13 +27,18 @@ def prepare(string, spec):
 
 def validate(string, spec):
     ''''''
+    if 'alphabet' in spec:
+        observed = set(string)
+        permitted = set(formats.alphabets[spec['alphabet']])
+        if any(char not in permitted for char in observed):
+            illegal_fmt = ', '.join(observed.difference(permitted))
+            raise RuntimeError(f"Validation failed; illegal characters: {illegal_fmt}")
     if 'min_length' in spec:
         if len(string) < spec['min_length']:
             raise RuntimeError(f'Validation failed: min_length')
     if 'max_length' in spec:
         if len(string) > spec['max_length']:
             raise RuntimeError(f'Validation failed: max_length')
-    # Alphabet
     return True
 
 
@@ -88,7 +92,6 @@ def format_output(outputs, output_type):
 
 @named('gen')
 def generate(
-    # scheme, file, format='', output='dict', hide_prefix=False
     scheme: 'scheme name; use {scheme}.{directive} if scheme has multiple directives',
     file: "input file path or '-' for stdin",
     format: 'input format; mandatory if scheme has multiple formats' = '',
@@ -97,8 +100,6 @@ def generate(
     '''Generate identifier(s) for input file path according to specified scheme'''
     PACKAGE_PATH = os.path.dirname(os.path.dirname(__file__))
     scheme, _, directive = scheme.partition('.')
-    
-
 
     # Load scheme specification
     yaml_path = pathlib.Path(f'{PACKAGE_PATH}/schemes/{scheme}.yaml')
@@ -130,7 +131,7 @@ def generate(
     if file == '-':
         string = sys.stdin.read().strip()
     elif os.path.exists(file):
-        string = pathlib.Path(file).read_text()
+        string = pathlib.Path(file).read_text().strip()
     else:
         raise FileNotFoundError(f'File {file} not found ')
     string = getattr(formats, format)(string)
@@ -152,28 +153,14 @@ def generate(
         string = run_directive(string, scheme, d, spec)
     string_hash = generate_hash(string, spec[scheme]['algorithm'])
     outputs = generate_output(string_hash, spec[scheme]['encodings'], hide_prefix)
-
+    
     return format_output(outputs, output)
 
-
-# @named('scheme')
-# def cli_generate_scheme(
-#     scheme: 'scheme name; specify {scheme}.{directive} if multiple directives are defined',
-#     string: 'input string' = '',
-#     file: 'input file path' = '',
-#     format: 'input format; mandatory if more than one format in scheme' = '',
-#     output: 'output format' = 'dict',
-#     hide_prefix: 'hide encoding prefix; overrides scheme' = False):
-
-
-
-# def validate_scheme():
-#     if hash_algorithm not in hash_funcs:
-#         raise RuntimeError(f'Unrecognised hash function {hash_algorithm}')
-
-# Validate target graph
-# Can't have both helper and hash function
 
 
 def main():
     argh.dispatch_commands([generate])
+
+
+if __name__ == '__main__':
+    main()

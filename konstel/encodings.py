@@ -7,7 +7,7 @@ def base32(string_hash):
 
 
 def cbase32(string_hash):
-    '''Returns lowercased cbase32 encoding of a hashlib Hash instance'''
+    '''Returns lowercased Crockford's base32 encoding of a hashlib Hash'''
     hash_b32 = base32(string_hash)
     base32_symbols = 'abcdefghijklmnopqrstuvwxyz234567'
     cbase32_symbols = '0123456789abcdefghjkmnpqrstvwxyz'

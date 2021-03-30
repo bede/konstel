@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(name = 'konstel',
       version = konstel.__version__,
-      description = 'Hash-based phonemic nomenclature schemes for biological sequences',
+      description = 'Hash-based phonemic sequence identifiers',
       url = 'http://github.com/bede/konstel',
       author = 'Bede Constantinides',
       author_email = 'bedeabc@gmail.com',

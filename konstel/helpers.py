@@ -2,6 +2,7 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 
 
+
 def sars_cov_2_s_genome(nuc_sequence):
     '''Returns translated SARS-CoV-2 spike sequence contained in nucleotide string'''
     nuc_sequence_fmt = nuc_sequence.translate(str.maketrans('', '', ' \n\t\r'))

@@ -1,4 +1,4 @@
-sars-cov-2-s:  # cannot contain '.'
+sars-cov-2-s:  # Cannot contain '.'
   description: Phonemic and base32 identifiers for SARS-CoV-2 spike protein sequences
   version: 1.0.0
   directives:
@@ -10,6 +10,7 @@ sars-cov-2-s:  # cannot contain '.'
         strip_characters:
           - '*'  # Remove terminal stops
       validate:
+        alphabet: protein
         min_length: 1200
         max_length: 1300
     genome:
@@ -17,6 +18,8 @@ sars-cov-2-s:  # cannot contain '.'
       target: protein
       formats:
         - fasta
+      validate:
+        alphabet: nucleotide-ambiguous
       helper: True
   algorithm: sha1
   encodings:

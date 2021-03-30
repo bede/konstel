@@ -7,17 +7,12 @@ from konstel import formats
 from konstel import encodings
 
 
+
 ALGORITHMS = hashlib.algorithms_available
 ALPHABETS = formats.alphabets.keys()
 ENCODINGS = [o[0] for o in inspect.getmembers(encodings, inspect.isfunction)]
 FORMATS = [o[0] for o in inspect.getmembers(formats, inspect.isfunction)]
 OUTPUT_TYPES = {'dict', 'tab', 'table'}
-
-
-# For when classes are implemented
-# classes = [obj for name, obj in inspect.getmembers(sys.modules[__name__], inspect.isclass)
-#           if obj.__module__ is __name__]
-# [m[0] for m in inspect.getmembers(my_module, inspect.isclass) if m[1].__module__ == 'my_module']
 
 
 def load_scheme(yaml_text):

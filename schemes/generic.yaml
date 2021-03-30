@@ -1,10 +1,10 @@
-generic:  # cannot contain '.'
-  description: Phonemic and hash zbase32 identifiers for arbitrary biological sequences
+generic:  # Cannot contain '.'
+  description: Phonemic and cbase32 identifiers for arbitrary biological sequences
   version: 1.0.0
   directives:
     nucl:
       formats:
-        - fasta  # Single fasta record, with or without header
+        - fasta  # Single fasta record or naked sequence
       validate:
         alphabet: nucleotide
     nucl-ambiguous:
