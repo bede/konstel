@@ -1,4 +1,6 @@
 import base64
+import itertools
+from math import ceil, log
 
 
 def base32(string_hash):
@@ -43,22 +45,24 @@ def phonemes_16_4(string_hash):
     vowel_map = dict(zip(range(4), 'aiou'))
     consonant_map = dict(zip(range(16), 'bdfghjklmnprstvz'))
     word = ''
+    if len(hash_b2) % 6 != 0:
+        # Pad with leading zeros
+        hash_b2 = hash_b2.zfill(6 * ceil(len(hash_b2) / 6))
     for pos in range(0, len(hash_b2), 6):
         window = hash_b2[pos:pos+6]
-        if len(window) < 6:  # Pad with trailing zeros
-            window = f'{window:<06}'
         c, v = int(window[:4], 2), int(window[4:], 2)
         word += f'{consonant_map[c]}{vowel_map[v]}'
     return word
 
 
-def phonemes_16_4_bits(string_hash, result_len=None):
+def phonemes_16_4_bits_old(string_hash, result_len=None):
     '''
     Returns word comprising consonant-vowel phonemes from hashlib Hash
     Maps 16 consonants and 4 vowels to six bit windows of hash
     3 bits per character
+
+    Uses bit-wise logic to calculate which phonemes are which.
     '''
-    import itertools
     from math import log2
     phonemes = [''.join(i) for i in itertools.product('bdfghjklmnprstvz', 'aiou')]
     phoneme_bit_size = log2(len(phonemes))
@@ -68,7 +72,7 @@ def phonemes_16_4_bits(string_hash, result_len=None):
 
     if result_len is None:
         result_len = int(8 * string_hash.digest_size / phoneme_bit_size)
-    front_offset = int(8 * string_hash.digest_size - phoneme_bit_size)
+    front_offset = int(phoneme_bit_size * result_len - phoneme_bit_size)
     mask = (2 ** int(phoneme_bit_size) - 1) << front_offset
 
     word = ''
@@ -77,3 +81,26 @@ def phonemes_16_4_bits(string_hash, result_len=None):
         word += phonemes[phoneme_num]
         hash_b2 = hash_b2 << int(phoneme_bit_size)
     return word
+
+
+def phonemes_16_4_bits(string_hash, result_len=None, phonemes=None):
+    '''
+    Returns word comprising `string_hash` represented by `phonemes` of max
+    number `result_len`.
+
+    This function transforms the `string_hash` into a number of base
+    `len(phonemes)` and then returns that number printed out with each digit
+    represented as a phoneme. This has the advantage, relative to other phoneme
+    schemes, of allowing phoneme lists of non-base-2 length.
+    '''
+    if phonemes is None:
+        phonemes = [''.join(i) for i in itertools.product('bdfghjklmnprstvz', 'aiou')]
+    hash_b2 = int(string_hash.hexdigest(), 16)
+    if result_len is None:
+        result_len = ceil(log(hash_b2, len(phonemes)))
+
+    word = []
+    for _ in range(ceil(log(hash_b2, len(phonemes)))):
+        phoneme_num, hash_b2 = hash_b2 % len(phonemes), hash_b2 // len(phonemes)
+        word.append(phonemes[phoneme_num])
+    return ''.join(word[:-result_len-1:-1])
