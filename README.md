@@ -1,10 +1,11 @@
 # Konstel(lations)
 
-
+![Tests](https://github.com/bede/konstel/actions/workflows/test.yml/badge.svg)
+[![PyPI](https://badge.fury.io/py/konstel.svg)](https://badge.fury.io/py/konstel)  
 
 **Currently under active development, proceed with caution**
 
-CLI and Python library for creating short hash-based identifiers (e.g. `S:mfcq` or `S:papoheme`) for distinct SARS-CoV-2 spike proteins, or indeed any protein sequence, nucleotide sequence or generic string of interest. For further details and my SARS-CoV-2 naming proposal, please read my [blog post](https://log.bede.im/2021/01/19/covid-hashes).
+An extensible command line tool and Python library for creating memorable and prononceable hash-based identifier schemes for sequences, biological or otherwise. For further details and my SARS-CoV-2 naming proposal, please read my [blog post](https://log.bede.im/2021/01/19/covid-hashes).
 
 
 
@@ -12,6 +13,9 @@ CLI and Python library for creating short hash-based identifiers (e.g. `S:mfcq` 
 
 ```shell
 # Python >= 3.6
+pip install konstel
+
+# Latest
 pip install git+https://github.com/bede/konstel
 ```
 

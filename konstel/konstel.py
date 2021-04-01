@@ -136,7 +136,7 @@ def generate(
         raise FileNotFoundError(f'File {file} not found ')
     string = getattr(formats, format)(string)
 
-    # Validate output
+    # Validate output format
     if not output in schema.OUTPUT_TYPES:
         raise RuntimeError(f'Unrecognised output type {output}. Options: {schema.OUTPUT_TYPES}')
 
