@@ -98,7 +98,7 @@ def generate(
     output: 'output format' = 'dict',
     hide_prefix: 'hide encoding prefix; overrides scheme' = False):
     '''Generate identifier(s) for input file path according to specified scheme'''
-    PACKAGE_PATH = os.path.dirname(os.path.dirname(__file__))
+    PACKAGE_PATH = os.path.dirname(__file__)
     scheme, _, directive = scheme.partition('.')
 
     # Load scheme specification
