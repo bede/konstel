@@ -13,7 +13,7 @@ setup(name = 'konstel',
       packages=['konstel'],
       include_package_data=True,  # MANIFEST.in
       python_requires='>=3.6',
-      install_requires=['argh', 'biopython>=1.78', 'strictyaml>=1.4.0'],
+      install_requires=['defopt', 'biopython>=1.78', 'strictyaml>=1.4.0'],
       entry_points = {'console_scripts':['konstel=konstel.konstel:main']},
       classifiers=['Intended Audience :: Science/Research',
                    'License :: OSI Approved :: MIT License',

@@ -1,10 +1,10 @@
 import os
 import sys
+import typing
 import pathlib
 import hashlib
 
-import argh
-from argh.decorators import named
+import defopt
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -90,14 +90,20 @@ def format_output(outputs, output_type):
         return outputs_fmt
 
 
-@named('gen')
-def generate(
-    scheme: 'scheme name; use {scheme}.{directive} if scheme has multiple directives',
-    file: "input file path or '-' for stdin",
-    format: 'input format; mandatory if scheme has multiple formats' = '',
-    output: 'output format' = 'dict',
-    hide_prefix: 'hide encoding prefix; overrides scheme' = False):
-    '''Generate identifier(s) for input file path according to specified scheme'''
+def generate(scheme: str,
+             file: str,
+             format: typing.Union[str, None] = None,
+             output: str = 'dict',
+             hide_prefix: bool = False):
+    '''
+    Generate identifier(s) for input file path or stdin according to specified scheme
+
+    :arg scheme: Scheme name; use {scheme}.{directive} if scheme specifies multiple directives
+    :arg file: Input path or - for stdin
+    :arg format: Input format; mandatory if scheme specifies multiple formats
+    :arg output: Output format (dict, tab or table)
+    :arg hide_prefix: Hide encoding prefix; overrides scheme
+    '''
     PACKAGE_PATH = os.path.dirname(__file__)
     scheme, _, directive = scheme.partition('.')
 
@@ -157,9 +163,8 @@ def generate(
     return format_output(outputs, output)
 
 
-
 def main():
-    argh.dispatch_commands([generate])
+    defopt.run({'gen': generate}, strict_kwonly=False, no_negated_flags=True)
 
 
 if __name__ == '__main__':
