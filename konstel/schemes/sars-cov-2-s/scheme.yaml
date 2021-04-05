@@ -1,5 +1,5 @@
 sars-cov-2-s:  # Cannot contain '.'
-  description: Phonemic and base32 identifiers for SARS-CoV-2 spike protein sequences
+  description: Phonemic and cbase32 identifiers for SARS-CoV-2 spike protein sequences
   version: 1.0.0
   directives:
     protein:
@@ -24,17 +24,13 @@ sars-cov-2-s:  # Cannot contain '.'
   algorithm: sha1
   encodings:
     hash:
-      type: base32
+      type: cbase32
       length: 4
       include_full: True
       prefix: 'S:'
     id:
       type: phonemes_16_4
       length: 7
-      prefix: 'S:'
-    id-legacy:
-      type: phonemes_10_5
-      length: 8
       prefix: 'S:'
     id-rod:
       type: phonemes_16_4_bits

@@ -1,6 +1,6 @@
 # Konstel(lations)
 
-![Tests](https://github.com/bede/konstel/actions/workflows/test.yml/badge.svg)
+[![Tests](https://github.com/bede/konstel/actions/workflows/test.yml/badge.svg)](https://github.com/bede/konstel/actions)
 [![PyPI](https://badge.fury.io/py/konstel.svg)](https://badge.fury.io/py/konstel)
 
 **Currently under active development, proceed with caution**
