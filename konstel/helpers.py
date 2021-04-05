@@ -14,7 +14,7 @@ def sars_cov_2_s_genome(genome):
     try:
         ref_gene = str(SeqIO.read(
             f'{PACKAGE_PATH}/schemes/sars-cov-2-s/assets/MN908947.3.S.fa', 'fasta').seq)
-        result = parasail.sg_trace(ref_gene, genome, 10, 1, parasail.dnafull)
+        result = parasail.sg_qx_trace(ref_gene, genome, 10, 1, parasail.dnafull)
         aln_start = result.traceback.query.rfind(ref_gene)
         aln_end = aln_start + len(ref_gene)
         gene = Seq(result.traceback.ref[aln_start:aln_end])
