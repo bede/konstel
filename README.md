@@ -3,7 +3,7 @@
 [![Tests](https://github.com/bede/konstel/actions/workflows/test.yml/badge.svg)](https://github.com/bede/konstel/actions)
 [![PyPI](https://badge.fury.io/py/konstel.svg)](https://badge.fury.io/py/konstel)
 
-**Currently under active development, proceed with caution**
+**Not yet stable, proceed with caution**
 
 An extensible command line tool and library for generating memorable and pronounceable hash-based identifier schemes for sequences, biological or otherwise. For further details and my SARS-CoV-2 naming proposal, please read my [blog post](https://log.bede.im/2021/01/19/covid-hashes).
 
