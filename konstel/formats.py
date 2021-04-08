@@ -3,13 +3,11 @@ import io
 from Bio import SeqIO
 
 
-
 alphabets = {
 	'nucleotide': 'ACGTU',
 	'nucleotide-ambiguous': '-ABCDGHKMNRSTUVWY',
 	'protein': '*ACDEFGHIKLMNPQRSTVWY'
 }
-
 
 
 def fasta(string):

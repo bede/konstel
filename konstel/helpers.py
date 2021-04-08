@@ -5,7 +5,6 @@ from Bio import SeqIO
 from Bio.Seq import Seq
 
 
-
 PACKAGE_PATH = os.path.dirname(__file__)
 
 

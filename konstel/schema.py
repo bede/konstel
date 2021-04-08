@@ -7,7 +7,6 @@ from konstel import formats
 from konstel import encodings
 
 
-
 ALGORITHMS = hashlib.algorithms_available
 ALPHABETS = formats.alphabets.keys()
 ENCODINGS = [o[0] for o in inspect.getmembers(encodings, inspect.isfunction)]

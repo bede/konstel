@@ -1,12 +1,12 @@
 # Konstel(lations)
 
-[![Tests](https://github.com/bede/konstel/actions/workflows/test.yml/badge.svg)](https://github.com/bede/konstel/actions)
-[![PyPI](https://badge.fury.io/py/konstel.svg)](https://badge.fury.io/py/konstel)
+[![Tests](https://img.shields.io/github/workflow/status/bede/konstel/tests)](https://github.com/bede/konstel/actions)
+[![PyPI](https://img.shields.io/pypi/v/konstel.svg?color=brightgreen)](https://badge.fury.io/py/konstel)
+
 
 **Not yet stable, proceed with caution**
 
 An extensible command line tool and library for generating memorable and pronounceable hash-based identifier schemes for sequences, biological or otherwise. For further details and my SARS-CoV-2 naming proposal, please read my [blog post](https://log.bede.im/2021/01/19/covid-hashes).
-
 
 
 ## Install
@@ -18,7 +18,6 @@ pip install konstel
 # Latest
 pip install git+https://github.com/bede/konstel
 ```
-
 
 
 ## Usage 
@@ -38,7 +37,6 @@ hash                 4449jk
 hash-full            4449jkgqyv6akzs3aaptjav527dger1m
 id                   mibofi    
 ```
-
 
 
 ### Python

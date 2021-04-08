@@ -1,5 +1,6 @@
 import os
 import sys
+import base64
 import typing
 import pathlib
 import hashlib
@@ -15,6 +16,31 @@ import konstel.helpers as helpers
 import konstel.encodings as encodings
 
 
+def load_scheme(scheme):
+    ''''''
+    PACKAGE_PATH = os.path.dirname(__file__)
+    scheme, _, directive = scheme.partition('.')
+
+    # Load scheme specification
+    yaml_path = pathlib.Path(f'{PACKAGE_PATH}/schemes/{scheme}/scheme.yaml')
+    if not os.path.exists(yaml_path):
+        raise FileNotFoundError(f'Failed to open specification for scheme {scheme}')
+    spec = schema.load_scheme(yaml_path.read_text()).data
+
+    # Validate presence and unambiguity of scheme, directive and format
+    if scheme not in spec:
+        raise RuntimeError(f'Unrecognised scheme {scheme}.')
+    if not directive:
+        if len(spec[scheme]['directives']) == 1:  # One option
+            directive = next(iter(spec[scheme]['directives']))
+        else:
+            raise RuntimeError(f"Ambiguous directive for scheme {scheme}. "
+                               f"Options: {', '.join(spec[scheme]['directives'].keys())}")
+    if directive not in spec[scheme]['directives']:
+        raise RuntimeError(f'Unrecognised directive {directive} for scheme {scheme}')
+
+    return scheme, directive, spec
+
 
 def prepare(string, spec):
     ''''''
@@ -25,7 +51,7 @@ def prepare(string, spec):
     return string
 
 
-def validate(string, spec):
+def validate_string(string, spec):
     ''''''
     if 'alphabet' in spec:
         observed = set(string)
@@ -47,7 +73,7 @@ def run_directive(string, scheme, directive, spec):
     if 'prepare' in spec[scheme]['directives'][directive]:
         string = prepare(string, spec[scheme]['directives'][directive]['prepare'])
     if 'validate' in spec[scheme]['directives'][directive]:
-        validate(string, spec[scheme]['directives'][directive]['validate'])
+        validate_string(string, spec[scheme]['directives'][directive]['validate'])
     if spec[scheme]['directives'][directive]['helper']:
         helper_name = f"{scheme}_{directive}".replace('-','_')
         helper = getattr(helpers, helper_name)
@@ -57,13 +83,13 @@ def run_directive(string, scheme, directive, spec):
 
 def generate_hash(string, algorithm):
     ''''''
-    string_hash = getattr(hashlib, algorithm)(string.encode())
-    return string_hash
+    hash_string = getattr(hashlib, algorithm)(string.encode()).hexdigest()
+    return hash_string
 
 
-def generate_output(string_hash, spec, hide_prefix):
+def generate_encodings(hash_b16, spec, hide_prefix):
     ''''''
-    encodings_raw = {n: getattr(encodings, m['type'])(string_hash) for n, m in spec.items()}
+    encodings_raw = {n: getattr(encodings, m['type'])(hash_b16) for n, m in spec.items()}
     encodings_fmt = {}
     for name, encoding_raw in encodings_raw.items():
         prefix = spec[name]['prefix'] if not hide_prefix else ''
@@ -74,10 +100,10 @@ def generate_output(string_hash, spec, hide_prefix):
     return encodings_fmt
 
 
-def format_output(outputs, output_type):
-    '''Returns string format'''
+def format_encodings(outputs, output_type='dict'):
+    '''Optionally prints encodings in tabular format'''
     if output_type == 'dict':
-        return outputs
+        return outputs  # Do nothing, return dict
     elif output_type == 'tab':
         outputs_fmt = ''
         for k, v in outputs.items():
@@ -96,7 +122,7 @@ def generate(scheme: str,
              output: str = 'dict',
              hide_prefix: bool = False):
     '''
-    Generate identifier(s) for input file path or stdin according to specified scheme
+    Generate identifier(s) for input file path or stdin according to the specified scheme
 
     :arg scheme: Scheme name; use {scheme}.{directive} if scheme specifies multiple directives
     :arg file: Input path or - for stdin
@@ -104,34 +130,17 @@ def generate(scheme: str,
     :arg output: Output format (dict, tab or table)
     :arg hide_prefix: Hide encoding prefix; overrides scheme
     '''
-    PACKAGE_PATH = os.path.dirname(__file__)
-    scheme, _, directive = scheme.partition('.')
+    scheme, directive, spec = load_scheme(scheme)
+    
+    print(f"scheme: {scheme} ({directive}),"
+          f" input: {'stdin' if file == '-' else file}", file=sys.stderr)
 
-    # Load scheme specification
-    yaml_path = pathlib.Path(f'{PACKAGE_PATH}/schemes/{scheme}/scheme.yaml')
-    if not os.path.exists(yaml_path):
-        raise FileNotFoundError(f'Failed to open specification for scheme {scheme}')
-    spec = schema.load_scheme(yaml_path.read_text()).data
-
-    # Validate presence and unambiguity of scheme, directive and format
-    if scheme not in spec:
-        raise RuntimeError(f'Unrecognised scheme {scheme}.')
-    if not directive:
-        if len(spec[scheme]['directives']) == 1:  # One option
-            directive = next(iter(spec[scheme]['directives']))
-        else:
-            raise RuntimeError(f"Ambiguous directive for scheme {scheme}. "
-                               f"Options: {', '.join(spec[scheme]['directives'].keys())}")
-    if directive not in spec[scheme]['directives']:
-        raise RuntimeError(f'Unrecognised directive {directive} for scheme {scheme}')
+    # Validate format
     if not format:
         if len(spec[scheme]['directives'][directive]['formats']) == 1:
             format = next(iter(spec[scheme]['directives'][directive]['formats']))
         else:
             raise RuntimeError(f'Ambiguous format for directive {directive} of scheme {scheme}')
-    
-    print(f"scheme: {scheme} ({directive}),"
-          f" input: {'stdin' if file == '-' else file}", file=sys.stderr)
 
     # Validate, read and format input file or stdin
     if file == '-':
@@ -157,14 +166,44 @@ def generate(scheme: str,
             d = g[d]
     for d in dag:
         string = run_directive(string, scheme, d, spec)
-    string_hash = generate_hash(string, spec[scheme]['algorithm'])
-    outputs = generate_output(string_hash, spec[scheme]['encodings'], hide_prefix)
+    hash_b16 = generate_hash(string, spec[scheme]['algorithm'])
+    encodings_ = generate_encodings(hash_b16, spec[scheme]['encodings'], hide_prefix)
+    print(format_encodings(encodings_, output))
+    return encodings_
+
+
+def regenerate(scheme: str,
+               hash_b32: str,
+               output: str = 'dict',
+               hide_prefix: bool = False):
+    '''
+    Regenerate identifier(s) for an existing full length hash according to the specified scheme
+
+    :arg scheme: Scheme name; use {scheme}.{directive} if scheme specifies multiple directives
+    :arg hash_b32: Full length base32 encoded hash
+    :arg output: Output format (dict, tab or table)
+    :arg hide_prefix: Hide encoding prefix; overrides scheme
+    '''
+    scheme, directive, spec = load_scheme(scheme)
     
-    return format_output(outputs, output)
+    print(f"scheme: {scheme} ({directive}), input hash: {hash_b32}", file=sys.stderr)
+
+    # Validate output format
+    if not output in schema.OUTPUT_TYPES:
+        raise RuntimeError(f'Unrecognised output type {output}. Options: {schema.OUTPUT_TYPES}')
+
+    # print(hash_b32.upper())
+    hash_cb32 = encodings.cbase32_to_base32(hash_b32)
+    hash_b16 = base64.b32decode(hash_cb32).hex()
+    encodings_ = generate_encodings(hash_b16, spec[scheme]['encodings'], hide_prefix)
+    print(format_encodings(encodings_, output))
+    return encodings_
 
 
 def main():
-    defopt.run({'gen': generate}, strict_kwonly=False, no_negated_flags=True)
+    defopt.run(
+        {'gen': generate, 'regen': regenerate},
+        strict_kwonly=False, no_negated_flags=True)
 
 
 if __name__ == '__main__':

@@ -5,7 +5,9 @@ import subprocess
 
 from konstel import konstel
 
+
 data_dir = 'konstel/tests/data'
+
 
 def run(cmd, cwd='./'):  # Helper for CLI testing
     return subprocess.run(cmd,
