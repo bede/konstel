@@ -89,19 +89,20 @@ def generate_hash(string, algorithm):
     return hash_string
 
 
-def generate_encodings(hash_b16, spec, hide_prefix):
-    ''''''
+def generate_encodings(hash_b16, spec, length, hide_prefix):
+    '''Returns dict of encodings, with '''
     encodings_raw = {n: getattr(encodings, m['type'])(hash_b16) for n, m in spec.items()}
     encodings_fmt = {}
     for name, encoding_raw in encodings_raw.items():
         prefix = spec[name]['prefix'] if not hide_prefix else ''
-        length = spec[name]['length'] if 'length' in spec[name] else len(encoding_raw)    
+        scheme_length = spec[name]['length'] if 'length' in spec[name] else len(encoding_raw)
+        scheme_length = length if length else scheme_length  # Override scheme
         if name == 'hash':
             encodings_fmt[name] = f'{prefix}{encoding_raw}'
             if spec[name]['length']:
-                encodings_fmt[f'{name}-{length}'] = f'{prefix}{encoding_raw[:length]}'
+                encodings_fmt[f'{name}-{scheme_length}'] = f'{prefix}{encoding_raw[:scheme_length]}'
         else:
-            encodings_fmt[name] = f'{prefix}{encoding_raw[:length]}'
+            encodings_fmt[name] = f'{prefix}{encoding_raw[:scheme_length]}'
     return encodings_fmt
 
 
@@ -125,6 +126,7 @@ def generate(scheme: str,
              file: str,
              format: typing.Union[str, None] = None,
              output: str = 'json',
+             length: typing.Union[int, None] = None,
              hide_prefix: bool = False):
     '''
     Generate identifier(s) for input file path or stdin according to the specified scheme
@@ -134,6 +136,7 @@ def generate(scheme: str,
     :arg file: Input path or - for stdin
     :arg format: Input format; mandatory if scheme specifies multiple formats
     :arg output: Output format (json, tsv, table)
+    :arg length: Encoding length; overrides scheme
     :arg hide_prefix: Hide encoding prefix; overrides scheme
     '''
     scheme, directive, spec = load_scheme(scheme)
@@ -173,7 +176,7 @@ def generate(scheme: str,
     for d in dag:
         string = run_directive(string, scheme, d, spec)
     hash_b16 = generate_hash(string, spec[scheme]['algorithm'])
-    encodings_ = generate_encodings(hash_b16, spec[scheme]['encodings'], hide_prefix)
+    encodings_ = generate_encodings(hash_b16, spec[scheme]['encodings'], length, hide_prefix)
     outputs = {**{'scheme': scheme}, **encodings_}
     print(format_encodings(outputs, output))
     return outputs
@@ -207,7 +210,7 @@ def regenerate(scheme: str,
     hash_b16 = getattr(encodings, f'decode_{hash_type}')(hash_string)
 
     # Regenerate using scheme
-    encodings_ = generate_encodings(hash_b16, spec[scheme]['encodings'], hide_prefix)
+    encodings_ = generate_encodings(hash_b16, spec[scheme]['encodings'], length, hide_prefix)
     outputs = {**{'scheme': scheme}, **encodings_}
     
     print(format_encodings(outputs, output))

@@ -26,7 +26,6 @@ def test_validation_alphabet():
     with pytest.raises(RuntimeError):
         konstel.generate('generic.nucl', file='-')
 
-
 def test_sars2_generate_prot():
     result = konstel.generate('sars-cov-2-s.protein', f'{data_dir}/spike.prot.fa')
     assert result['id'] == 'S:dodidib'
@@ -34,6 +33,11 @@ def test_sars2_generate_prot():
 def test_sars2_generate_nucl():
     result = konstel.generate('sars-cov-2-s.genome', f'{data_dir}/spike.genome.fa')
     assert result['id'] == 'S:dodidib'
+
+def test_sars2_generate_length():
+    result = konstel.generate('sars-cov-2-s.protein', f'{data_dir}/spike.prot.fa', length=15)
+    assert result['id'] == 'S:dodidibirunodut'
+
 
 
 def test_sars2_generate_stdin():
@@ -62,6 +66,9 @@ def test_sars2_legacy_regen_prefix():
     result = konstel.regenerate('sars-cov-2-s-legacy', 'S:mfcqn6mh3bnp7vv6eirptvbqik5c65ip')
     assert result['id'] == 'S:papoheme'
 
+def test_sars2_regen_length():
+    result = konstel.regenerate('sars-cov-2-s', 'S:c52gdyc7v1dfznny48hfkn1g8ax2yx8f', length=15)
+    assert result['id'] == 'S:dodidibirunodut'
 
 def test_sars2_legacy_protein():
     result = konstel.generate('sars-cov-2-s-legacy.protein', f'{data_dir}/spike.prot.fa')
