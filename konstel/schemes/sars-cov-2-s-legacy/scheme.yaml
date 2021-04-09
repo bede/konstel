@@ -26,7 +26,6 @@ sars-cov-2-s-legacy:  # Cannot contain '.'
     hash:
       type: base32
       length: 4
-      include_full: True
       prefix: 'S:'
     id:
       type: phonemes_10_5

@@ -4,13 +4,18 @@ from math import ceil, log, log2
 
 
 def base32(hash_b16):
-    '''Returns lowercased and padding-stripped base32 encoding of a hashlib Hash'''
-    # return base64.b32encode(hash_b16.digest()).decode().lower().rstrip('=')
+    '''Returns lowercased RFC base32 encoding of a base16 hash'''
+    print(hash_b16)
     return base64.b32encode(bytes.fromhex(hash_b16)).decode().lower()
 
 
+def decode_base32(hash_base32):
+    '''Returns base16 encoding of RFC base32 hash'''
+    return base64.b32decode(hash_base32.upper()).hex()
+
+
 def cbase32(hash_b16):
-    '''Returns lowercased Crockford's base32 encoding of a hashlib Hash'''
+    '''Returns lowercased Crockford's base32 encoding of a base16 hash'''
     hash_b32 = base32(hash_b16)
     base32_symbols = 'abcdefghijklmnopqrstuvwxyz234567'
     cbase32_symbols = '0123456789abcdefghjkmnpqrstvwxyz'
@@ -18,17 +23,18 @@ def cbase32(hash_b16):
     return ''.join([base32_to_cbase32[c] for c in hash_b32])
 
 
-def cbase32_to_base32(hash_cbase32):
-    '''Returns lowercased Crockford's base32 encoding of a hashlib Hash'''
+def decode_cbase32(hash_cbase32):
+    '''Returns base16 from Crockford cbase32 encoded hash'''
     base32_symbols = 'abcdefghijklmnopqrstuvwxyz234567'
     cbase32_symbols = '0123456789abcdefghjkmnpqrstvwxyz'
     cbase32_to_base32 = dict(zip(cbase32_symbols, base32_symbols))
-    return ''.join([cbase32_to_base32[c] for c in hash_cbase32]).upper()
+    hash_base32 = ''.join([cbase32_to_base32[c] for c in hash_cbase32]).upper()
+    return decode_base32(hash_base32)
 
 
 def phonemes_10_5(hash_b16):
     '''
-    Returns word comprising consonant-vowel phonemes from hashlib Hash
+    Returns word comprising consonant-vowel phonemes from a base16 hash
     Maps 10 consonants and 5 vowels to base10 encoded hash
     2.8 bits per character
     '''
@@ -46,11 +52,11 @@ def phonemes_10_5(hash_b16):
 
 def phonemes_16_4(hash_b16):
     '''
-    Returns word comprising consonant-vowel phonemes from hashlib Hash
+    Returns word comprising consonant-vowel phonemes from a base16 hash
     Maps 16 consonants and 4 vowels to six bit windows of hash
     3 bits per character
     '''
-    hash_b2 = bin(int(hash_b16, 16))[2:]  # Binary string from hex string
+    hash_b2 = bin(int(hash_b16, 16))[2:]  # Binary string from base16 hash
     vowel_map = dict(zip(range(4), 'aiou'))
     consonant_map = dict(zip(range(16), 'bdfghjklmnprstvz'))
     word = ''
@@ -66,7 +72,7 @@ def phonemes_16_4(hash_b16):
 
 def phonemes_16_4_bits_old(hash_b16, result_len=None):
     '''
-    Returns word comprising consonant-vowel phonemes from hashlib Hash
+    Returns word comprising consonant-vowel phonemes from a base16 hash
     Maps 16 consonants and 4 vowels to six bit windows of hash
     3 bits per character
 

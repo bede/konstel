@@ -9,9 +9,10 @@ from konstel import encodings
 
 ALGORITHMS = hashlib.algorithms_available
 ALPHABETS = formats.alphabets.keys()
-ENCODINGS = [o[0] for o in inspect.getmembers(encodings, inspect.isfunction)]
-FORMATS = [o[0] for o in inspect.getmembers(formats, inspect.isfunction)]
-OUTPUT_TYPES = {'dict', 'tab', 'table'}
+BASE_ENCODINGS = {'base32', 'cbase32'}
+ENCODINGS = {o[0] for o in inspect.getmembers(encodings, inspect.isfunction)}
+FORMATS = {o[0] for o in inspect.getmembers(formats, inspect.isfunction)}
+OUTPUT_TYPES = {'json', 'tsv', 'table'}
 
 
 def load_scheme(yaml_text):
@@ -46,8 +47,7 @@ def load_scheme(yaml_text):
                     'type': Enum(ENCODINGS),
                     'length': Int(),
                     Optional('prefix', default=''): Str(),
-                    Optional('include_full', default=False): Bool(),
-                    Optional('function', default=False): Bool(),
+                    Optional('hide-full', default=False): Bool(),
                 })
             )
         })

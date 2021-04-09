@@ -1,9 +1,9 @@
 import os
 import sys
-import base64
+import json
 import typing
-import pathlib
 import hashlib
+import pathlib
 
 import defopt
 
@@ -16,7 +16,7 @@ import konstel.helpers as helpers
 import konstel.encodings as encodings
 
 
-def load_scheme(scheme):
+def load_scheme(scheme, validate_directive=True):
     ''''''
     PACKAGE_PATH = os.path.dirname(__file__)
     scheme, _, directive = scheme.partition('.')
@@ -30,14 +30,16 @@ def load_scheme(scheme):
     # Validate presence and unambiguity of scheme, directive and format
     if scheme not in spec:
         raise RuntimeError(f'Unrecognised scheme {scheme}.')
-    if not directive:
-        if len(spec[scheme]['directives']) == 1:  # One option
-            directive = next(iter(spec[scheme]['directives']))
-        else:
-            raise RuntimeError(f"Ambiguous directive for scheme {scheme}. "
-                               f"Options: {', '.join(spec[scheme]['directives'].keys())}")
-    if directive not in spec[scheme]['directives']:
-        raise RuntimeError(f'Unrecognised directive {directive} for scheme {scheme}')
+    
+    if validate_directive:
+        if not directive:
+            if len(spec[scheme]['directives']) == 1:  # One option
+                directive = next(iter(spec[scheme]['directives']))
+            else:
+                raise RuntimeError(f"Ambiguous directive for scheme {scheme}. "
+                                   f"Options: {', '.join(spec[scheme]['directives'].keys())}")
+        if directive not in spec[scheme]['directives']:
+            raise RuntimeError(f'Unrecognised directive {directive} for scheme {scheme}')
 
     return scheme, directive, spec
 
@@ -93,18 +95,21 @@ def generate_encodings(hash_b16, spec, hide_prefix):
     encodings_fmt = {}
     for name, encoding_raw in encodings_raw.items():
         prefix = spec[name]['prefix'] if not hide_prefix else ''
-        length = spec[name]['length'] if 'length' in spec[name] else len(encoding_raw)
-        encodings_fmt[name] = f"{prefix}{encoding_raw[:length]}"
-        if spec[name].get('include_full'):
-            encodings_fmt[f'{name}-full'] = f"{prefix}{encoding_raw}"
+        length = spec[name]['length'] if 'length' in spec[name] else len(encoding_raw)    
+        if name == 'hash':
+            encodings_fmt[name] = f'{prefix}{encoding_raw}'
+            if spec[name]['length']:
+                encodings_fmt[f'{name}-{length}'] = f'{prefix}{encoding_raw[:length]}'
+        else:
+            encodings_fmt[name] = f'{prefix}{encoding_raw[:length]}'
     return encodings_fmt
 
 
 def format_encodings(outputs, output_type='dict'):
     '''Optionally prints encodings in tabular format'''
-    if output_type == 'dict':
-        return outputs  # Do nothing, return dict
-    elif output_type == 'tab':
+    if output_type == 'json':
+        return json.dumps(outputs)  # Do nothing, return dict
+    elif output_type == 'tsv':
         outputs_fmt = ''
         for k, v in outputs.items():
             outputs_fmt += f'{k}\t{v}\n'
@@ -119,15 +124,16 @@ def format_encodings(outputs, output_type='dict'):
 def generate(scheme: str,
              file: str,
              format: typing.Union[str, None] = None,
-             output: str = 'dict',
+             output: str = 'json',
              hide_prefix: bool = False):
     '''
     Generate identifier(s) for input file path or stdin according to the specified scheme
+    Returns dict, and prints format specified in OUTPUT
 
     :arg scheme: Scheme name; use {scheme}.{directive} if scheme specifies multiple directives
     :arg file: Input path or - for stdin
     :arg format: Input format; mandatory if scheme specifies multiple formats
-    :arg output: Output format (dict, tab or table)
+    :arg output: Output format (json, tsv, table)
     :arg hide_prefix: Hide encoding prefix; overrides scheme
     '''
     scheme, directive, spec = load_scheme(scheme)
@@ -168,36 +174,44 @@ def generate(scheme: str,
         string = run_directive(string, scheme, d, spec)
     hash_b16 = generate_hash(string, spec[scheme]['algorithm'])
     encodings_ = generate_encodings(hash_b16, spec[scheme]['encodings'], hide_prefix)
-    print(format_encodings(encodings_, output))
-    return encodings_
+    outputs = {**{'scheme': scheme}, **encodings_}
+    print(format_encodings(outputs, output))
+    return outputs
 
 
 def regenerate(scheme: str,
-               hash_b32: str,
-               output: str = 'dict',
+               hash_string: str,
+               output: str = 'json',
+               length: typing.Union[int, None] = None,
                hide_prefix: bool = False):
     '''
     Regenerate identifier(s) for an existing full length hash according to the specified scheme
 
-    :arg scheme: Scheme name; use {scheme}.{directive} if scheme specifies multiple directives
-    :arg hash_b32: Full length base32 encoded hash
-    :arg output: Output format (dict, tab or table)
+    :arg scheme: Scheme name
+    :arg hash_string: Full length hash digest
+    :arg output: Output format (dict, tsv or table)
+    :arg length: Encoding length; overrides scheme
     :arg hide_prefix: Hide encoding prefix; overrides scheme
     '''
-    scheme, directive, spec = load_scheme(scheme)
-    
-    print(f"scheme: {scheme} ({directive}), input hash: {hash_b32}", file=sys.stderr)
+    scheme, directive, spec = load_scheme(scheme, validate_directive=False)
+    hash_type = spec[scheme]['encodings']['hash']['type']
+    print(f"scheme: {scheme}, hash: {hash_string} ({hash_type})", file=sys.stderr)
 
     # Validate output format
     if not output in schema.OUTPUT_TYPES:
         raise RuntimeError(f'Unrecognised output type {output}. Options: {schema.OUTPUT_TYPES}')
 
-    # print(hash_b32.upper())
-    hash_cb32 = encodings.cbase32_to_base32(hash_b32)
-    hash_b16 = base64.b32decode(hash_cb32).hex()
+    # Normalise and decode supplied hash encoding
+    prefix = spec[scheme]['encodings']['hash']['prefix']
+    hash_string = hash_string[hash_string.startswith(prefix) and len(prefix):]  # Remove prefix
+    hash_b16 = getattr(encodings, f'decode_{hash_type}')(hash_string)
+
+    # Regenerate using scheme
     encodings_ = generate_encodings(hash_b16, spec[scheme]['encodings'], hide_prefix)
-    print(format_encodings(encodings_, output))
-    return encodings_
+    outputs = {**{'scheme': scheme}, **encodings_}
+    
+    print(format_encodings(outputs, output))
+    return outputs
 
 
 def main():

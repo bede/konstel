@@ -23,16 +23,11 @@ sars-cov-2-s:  # Cannot contain '.'
       helper: True
   algorithm: sha1
   encodings:
-    hash:
+    hash:  # An encoding named 'hash' is mandatory
       type: cbase32
       length: 4
-      include_full: True
       prefix: 'S:'
-    id:
+    id:  # 
       type: phonemes_16_4
-      length: 7
-      prefix: 'S:'
-    id-rod:
-      type: phonemes_16_4_bits
       length: 7
       prefix: 'S:'
