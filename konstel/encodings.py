@@ -5,7 +5,6 @@ from math import ceil, log, log2
 
 def base32(hash_b16):
     '''Returns lowercased RFC base32 encoding of a base16 hash'''
-    print(hash_b16)
     return base64.b32encode(bytes.fromhex(hash_b16)).decode().lower()
 
 

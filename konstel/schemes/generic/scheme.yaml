@@ -21,7 +21,6 @@ generic:  # Cannot contain '.'
   encodings:
     hash:
       type: cbase32  # Crockford's base32
-      length: 6  # 30 bits
     id:
       type: phonemes_16_4
       length: 10  # 30 bits

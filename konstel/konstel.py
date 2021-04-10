@@ -126,7 +126,7 @@ def generate(scheme: str,
              file: str,
              format: typing.Union[str, None] = None,
              output: str = 'json',
-             length: typing.Union[int, None] = None,
+             length: int = None,
              hide_prefix: bool = False):
     '''
     Generate identifier(s) for input file path or stdin according to the specified scheme
@@ -140,9 +140,6 @@ def generate(scheme: str,
     :arg hide_prefix: Hide encoding prefix; overrides scheme
     '''
     scheme, directive, spec = load_scheme(scheme)
-    
-    print(f"scheme: {scheme} ({directive}),"
-          f" input: {'stdin' if file == '-' else file}", file=sys.stderr)
 
     # Validate format
     if not format:
@@ -185,7 +182,7 @@ def generate(scheme: str,
 def regenerate(scheme: str,
                hash_string: str,
                output: str = 'json',
-               length: typing.Union[int, None] = None,
+               length: int = None,
                hide_prefix: bool = False):
     '''
     Regenerate identifier(s) for an existing full length hash according to the specified scheme
@@ -198,7 +195,7 @@ def regenerate(scheme: str,
     '''
     scheme, directive, spec = load_scheme(scheme, validate_directive=False)
     hash_type = spec[scheme]['encodings']['hash']['type']
-    print(f"scheme: {scheme}, hash: {hash_string} ({hash_type})", file=sys.stderr)
+    print(f"Scheme uses {hash_type}", file=sys.stderr)
 
     # Validate output format
     if not output in schema.OUTPUT_TYPES:

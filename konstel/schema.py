@@ -45,7 +45,7 @@ def load_scheme(yaml_text):
             'encodings': MapPattern(
                 Str(), Map({
                     'type': Enum(ENCODINGS),
-                    'length': Int(),
+                    Optional('length', default=0): Int(),
                     Optional('prefix', default=''): Str(),
                     Optional('hide-full', default=False): Bool(),
                 })

@@ -25,17 +25,16 @@ pip install git+https://github.com/bede/konstel
 ### Command line
 
 ```bash
-$ konstel gen sars-cov-2-s.genome tests/data/spike.genome.fa --output table
-scheme: sars-cov-2-s (genome), input: tests/data/spike.genome.fa
-hash                 S:mfcq         
-hash-full            S:mfcqn6mh3bnp7vv6eirptvbqik5c65ip
-id                   S:sapapag      
+$ konstel gen sars-cov-2-s.genome konstel/tests/data/spike2.genome.fa --output table
+scheme               sars-cov-2-s   
+hash                 S:w80qgz2k1fdds6x4mknxazm7psed5knd
+hash-4               S:w80q         
+id                   S:gofabil  
 
 $ echo "ACGT" | konstel gen generic.nucl - --output table
-scheme: generic (prot), input: stdin
-hash                 4449jk         
-hash-full            4449jkgqyv6akzs3aaptjav527dger1m
-id                   mibofi    
+scheme               generic        
+hash                 4449jkgqyv6akzs3aaptjav527dger1m
+id                   bodafanoja      
 ```
 
 
@@ -43,7 +42,6 @@ id                   mibofi
 
 ```python
 >>> from konstel import konstel
->>> konstel.generate('sars-cov-2-s.protein', 'tests/data/spike.prot.fa')
-scheme: sars-cov-2-s (protein), input: tests/data/spike.prot.fa
-{'hash': 'S:mfcq', 'hash-full': 'S:mfcqn6mh3bnp7vv6eirptvbqik5c65ip', 'id': 'S:sapapag'}
+>>> konstel.generate('sars-cov-2-s.protein', 'konstel/tests/data/spike.prot.fa')
+{"scheme": "sars-cov-2-s", "hash": "S:c52gdyc7v1dfznny48hfkn1g8ax2yx8f", "hash-4": "S:c52g", "id": "S:dodidib"}
 ```
