@@ -91,20 +91,35 @@ def generate_hash(string, algorithm):
 
 
 def generate_encodings(hash_b16, spec, length, hide_prefix):
-    '''Returns dict of encodings, with '''
-    
+    ''''''
     encodings_raw = {n: getattr(encodings, m['type'])(hash_b16) for n, m in spec.items()}
     encodings_fmt = {}
     for name, encoding_raw in encodings_raw.items():
         prefix = spec[name]['prefix'] if not hide_prefix else ''
-        scheme_length = spec[name]['length'] if 'length' in spec[name] else len(encoding_raw)
-        scheme_length = length if length else scheme_length  # Override scheme
+        
+        # Determine length of each encoding
+        if length:  # Manual override
+            scheme_length = length
+        elif 'length' in spec[name] and spec[name]['length']:  # In scheme and is truthy
+            scheme_length = spec[name]['length']
+        else:  # Fallback
+            scheme_length = len(encoding_raw)
+
+        # Handle 'hash' differently
         if name == 'hash':
             encodings_fmt[name] = f'{prefix}{encoding_raw}'
             if spec[name]['length']:
                 encodings_fmt[f'{name}-{scheme_length}'] = f'{prefix}{encoding_raw[:scheme_length]}'
         else:
             encodings_fmt[name] = f'{prefix}{encoding_raw[:scheme_length]}'
+
+        # Implement separators
+        if 'separator' in spec[name]:
+            char = spec[name]['separator']['character']
+            interval = spec[name]['separator']['interval']
+            encodings_fmt[name] = char.join(encodings_fmt[name][i:i+interval]
+                                            for i in range(0, len(encodings_fmt[name]), interval))
+
     return encodings_fmt
 
 
@@ -199,6 +214,10 @@ def regenerate(scheme: str,
     hash_type = spec[scheme]['encodings']['hash']['type']
     print(f"Scheme uses {hash_type}", file=sys.stderr)
 
+    # Validate presence of 'hash' in scheme
+    if not 'hash' in spec[scheme]['encodings']:
+        raise RuntimeError(f'Scheme {scheme} must specify a hash encoding')
+
     # Validate output format
     if not output in schema.OUTPUT_TYPES:
         raise RuntimeError(f'Unrecognised output type {output}. Options: {schema.OUTPUT_TYPES}')
@@ -206,6 +225,9 @@ def regenerate(scheme: str,
     # Normalise and decode supplied hash encoding
     prefix = spec[scheme]['encodings']['hash']['prefix']
     hash_string = hash_string[hash_string.startswith(prefix) and len(prefix):]  # Remove prefix
+    if 'separator' in spec[scheme]['encodings']['hash']:
+        sep_char = spec[scheme]['encodings']['hash']['separator']['character']
+        hash_string = hash_string.replace(sep_char, '')
     hash_b16 = getattr(encodings, f'decode_{hash_type}')(hash_string)
 
     # Regenerate using scheme

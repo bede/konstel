@@ -47,7 +47,10 @@ def load_scheme(yaml_text):
                     'type': Enum(ENCODINGS),
                     Optional('length', default=0): Int(),
                     Optional('prefix', default=''): Str(),
-                    Optional('hide-full', default=False): Bool(),
+                    Optional('separator'): Map({
+                        'character': Str(),
+                        'interval': Int()
+                    })
                 })
             )
         })

@@ -75,7 +75,13 @@ def test_sars2_legacy_genome():
     result = konstel.generate('sars-cov-2-s-legacy.genome', f'{data_dir}/spike.genome.fa')
     assert result['id'] == 'S:papoheme'
 
+def test_stdin_generic_separator():
+    sys.stdin = io.StringIO('ACGT')
+    result = konstel.generate('generic.nucl', file='-')
+    assert result['id'] == 'bodafa-nojava-juzira-sopizu-sogiho-pukona-pukihi-dukubi-tobata'
+
+
 
 # def test_cli_json():
 #     cmd_run = run(f'konstel gen sars-cov-2-s.protein spike.prot.fa')
-    # assert json.loads(cmd_run.stdout) == {"scheme": "sars-cov-2-s", "hash": "S:c52gdyc7v1dfznny48hfkn1g8ax2yx8f", "hash-4": "S:c52g", "id": "S:dodidib"}
+#     assert json.loads(cmd_run.stdout) == {"scheme": "sars-cov-2-s", "hash": "S:c52gdyc7v1dfznny48hfkn1g8ax2yx8f", "hash-4": "S:c52g", "id": "S:dodidib"}

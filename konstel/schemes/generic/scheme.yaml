@@ -23,4 +23,6 @@ generic:  # Cannot contain '.'
       type: cbase32  # Crockford's base32
     id:
       type: phonemes_16_4
-      length: 10  # 30 bits
+      separator:
+        character: '-'
+        interval: 6
