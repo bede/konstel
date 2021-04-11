@@ -38,13 +38,10 @@ def test_sars2_generate_length():
     result = konstel.generate('sars-cov-2-s.protein', f'{data_dir}/spike.prot.fa', length=15)
     assert result['id'] == 'S:dodidibirunodut'
 
-
-
 def test_sars2_generate_stdin():
     with open(f'{data_dir}/spike.genome.fa') as sys.stdin:
         result = konstel.generate('sars-cov-2-s.genome', file='-')
     assert result['id'] == 'S:dodidib'
-
 
 def test_sars2_regen():
     result = konstel.regenerate('sars-cov-2-s', 'c52gdyc7v1dfznny48hfkn1g8ax2yx8f')

@@ -20,7 +20,7 @@ setup(
         'biopython>=1.78',
         'parasail==1.2.4'],
     entry_points = {
-        'console_scripts':['konstel=konstel.konstel:main']},
+        'console_scripts':['konstel=konstel.cli:main']},
     classifiers=[
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: MIT License',

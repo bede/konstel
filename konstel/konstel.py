@@ -10,6 +10,7 @@ import defopt
 from Bio import SeqIO
 from Bio.Seq import Seq
 
+import konstel.cli as cli
 import konstel.schema as schema
 import konstel.formats as formats
 import konstel.helpers as helpers
@@ -91,6 +92,7 @@ def generate_hash(string, algorithm):
 
 def generate_encodings(hash_b16, spec, length, hide_prefix):
     '''Returns dict of encodings, with '''
+    
     encodings_raw = {n: getattr(encodings, m['type'])(hash_b16) for n, m in spec.items()}
     encodings_fmt = {}
     for name, encoding_raw in encodings_raw.items():
@@ -126,7 +128,7 @@ def generate(scheme: str,
              file: str,
              format: typing.Union[str, None] = None,
              output: str = 'json',
-             length: int = None,
+             length: int = 0,
              hide_prefix: bool = False):
     '''
     Generate identifier(s) for input file path or stdin according to the specified scheme
@@ -175,7 +177,7 @@ def generate(scheme: str,
     hash_b16 = generate_hash(string, spec[scheme]['algorithm'])
     encodings_ = generate_encodings(hash_b16, spec[scheme]['encodings'], length, hide_prefix)
     outputs = {**{'scheme': scheme}, **encodings_}
-    print(format_encodings(outputs, output))
+
     return outputs
 
 
@@ -190,8 +192,8 @@ def regenerate(scheme: str,
     :arg scheme: Scheme name
     :arg hash_string: Full length hash digest
     :arg output: Output format (dict, tsv or table)
-    :arg length: Encoding length; overrides scheme
-    :arg hide_prefix: Hide encoding prefix; overrides scheme
+    :arg length: Encoding length (overrides scheme)
+    :arg hide_prefix: Hide encoding prefix (overrides scheme)
     '''
     scheme, directive, spec = load_scheme(scheme, validate_directive=False)
     hash_type = spec[scheme]['encodings']['hash']['type']
@@ -209,16 +211,5 @@ def regenerate(scheme: str,
     # Regenerate using scheme
     encodings_ = generate_encodings(hash_b16, spec[scheme]['encodings'], length, hide_prefix)
     outputs = {**{'scheme': scheme}, **encodings_}
-    
-    print(format_encodings(outputs, output))
+
     return outputs
-
-
-def main():
-    defopt.run(
-        {'gen': generate, 'regen': regenerate},
-        strict_kwonly=False, no_negated_flags=True)
-
-
-if __name__ == '__main__':
-    main()
