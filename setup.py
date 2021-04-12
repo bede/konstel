@@ -3,10 +3,15 @@ import konstel
 from setuptools import setup
 
 
+with open('README.md', 'r') as fh:
+    long_description = fh.read()
+
 setup(
     name = 'konstel',
     version = konstel.__version__,
     description = 'Hash-based phonemic sequence identifiers',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     url = 'http://github.com/bede/konstel',
     author = 'Bede Constantinides',
     author_email = 'bedeabc@gmail.com',
