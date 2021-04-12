@@ -113,12 +113,14 @@ def generate_encodings(hash_b16, spec, length, hide_prefix):
         else:
             encodings_fmt[name] = f'{prefix}{encoding_raw[:scheme_length]}'
 
-        # Implement separators
+        # Add separators
         if 'separator' in spec[name]:
             char = spec[name]['separator']['character']
             interval = spec[name]['separator']['interval']
-            encodings_fmt[name] = char.join(encodings_fmt[name][i:i+interval]
-                                            for i in range(0, len(encodings_fmt[name]), interval))
+            separated_chars = []
+            for i in range(0, len(encodings_fmt[name])-2, interval):
+                separated_chars.append(encodings_fmt[name][i+len(prefix):i+len(prefix)+interval])
+            encodings_fmt[name] = prefix + char.join(separated_chars)
 
     return encodings_fmt
 
@@ -128,10 +130,7 @@ def format_encodings(outputs, output_type='dict'):
     if output_type == 'json':
         return json.dumps(outputs)  # Do nothing, return dict
     elif output_type == 'tsv':
-        outputs_fmt = ''
-        for k, v in outputs.items():
-            outputs_fmt += f'{k}\t{v}\n'
-        return outputs_fmt
+        return '\t'.join(outputs.values())
     elif output_type == 'table':
         outputs_fmt = ''
         for k, v in outputs.items():

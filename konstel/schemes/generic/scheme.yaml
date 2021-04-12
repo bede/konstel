@@ -17,12 +17,13 @@ generic:  # Cannot contain '.'
         - fasta
       validate:
         alphabet: protein
-  algorithm: sha1
+  algorithm: sha256
   encodings:
     hash:
       type: cbase32  # Crockford's base32
     id:
       type: phonemes_16_4
+      length: 48
       separator:
         character: '-'
         interval: 6

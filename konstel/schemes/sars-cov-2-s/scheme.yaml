@@ -21,13 +21,16 @@ sars-cov-2-s:  # Cannot contain '.'
       validate:
         alphabet: nucleotide-ambiguous
       helper: True
-  algorithm: sha1
+  algorithm: sha256
   encodings:
     hash:  # An encoding named 'hash' is mandatory
       type: cbase32
-      length: 4
+      length: 8  # 40 bits
       prefix: 'S:'
     id:  # 
       type: phonemes_16_4
-      length: 7
+      length: 12  # 36 bits
       prefix: 'S:'
+      separator:
+        character: '-'
+        interval: 6

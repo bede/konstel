@@ -28,32 +28,32 @@ def test_validation_alphabet():
 
 def test_sars2_generate_prot():
     result = konstel.generate('sars-cov-2-s.protein', f'{data_dir}/spike.prot.fa')
-    assert result['id'] == 'S:dodidib'
+    assert result['id'] == 'S:huhiji-gakihi'
 
 def test_sars2_generate_nucl():
     result = konstel.generate('sars-cov-2-s.genome', f'{data_dir}/spike.genome.fa')
-    assert result['id'] == 'S:dodidib'
+    assert result['id'] == 'S:huhiji-gakihi'
 
 def test_sars2_generate_length():
-    result = konstel.generate('sars-cov-2-s.protein', f'{data_dir}/spike.prot.fa', length=15)
-    assert result['id'] == 'S:dodidibirunodut'
+    result = konstel.generate('sars-cov-2-s.protein', f'{data_dir}/spike.prot.fa', length=18)
+    assert result['id'] == 'S:huhiji-gakihi-futofi'
 
 def test_sars2_generate_stdin():
     with open(f'{data_dir}/spike.genome.fa') as sys.stdin:
         result = konstel.generate('sars-cov-2-s.genome', file='-')
-    assert result['id'] == 'S:dodidib'
+    assert result['id'] == 'S:huhiji-gakihi'
 
 def test_sars2_regen():
-    result = konstel.regenerate('sars-cov-2-s', 'c52gdyc7v1dfznny48hfkn1g8ax2yx8f')
-    assert result['id'] == 'S:dodidib'
+    result = konstel.regenerate('sars-cov-2-s', '0k8n9hjh5xh5kbef1k6ye7e2d4brhpry5r985avrtf69v6amrbc0')
+    assert result['id'] == 'S:huhiji-gakihi'
 
 def test_sars2_regen_directive():
-    result = konstel.regenerate('sars-cov-2-s.protein', 'c52gdyc7v1dfznny48hfkn1g8ax2yx8f')
-    assert result['id'] == 'S:dodidib'
+    result = konstel.regenerate('sars-cov-2-s.protein', '0k8n9hjh5xh5kbef1k6ye7e2d4brhpry5r985avrtf69v6amrbc0')
+    assert result['id'] == 'S:huhiji-gakihi'
 
 def test_sars2_regen_prefix():
-    result = konstel.regenerate('sars-cov-2-s', 'S:c52gdyc7v1dfznny48hfkn1g8ax2yx8f')
-    assert result['id'] == 'S:dodidib'
+    result = konstel.regenerate('sars-cov-2-s', 'S:0k8n9hjh5xh5kbef1k6ye7e2d4brhpry5r985avrtf69v6amrbc0')
+    assert result['id'] == 'S:huhiji-gakihi'
 
 def test_sars2_legacy_regen():
     result = konstel.regenerate('sars-cov-2-s-legacy', 'mfcqn6mh3bnp7vv6eirptvbqik5c65ip')
@@ -64,8 +64,8 @@ def test_sars2_legacy_regen_prefix():
     assert result['id'] == 'S:papoheme'
 
 def test_sars2_regen_length():
-    result = konstel.regenerate('sars-cov-2-s', 'S:c52gdyc7v1dfznny48hfkn1g8ax2yx8f', length=15)
-    assert result['id'] == 'S:dodidibirunodut'
+    result = konstel.regenerate('sars-cov-2-s', 'S:0k8n9hjh5xh5kbef1k6ye7e2d4brhpry5r985avrtf69v6amrbc0', length=18)
+    assert result['id'] == 'S:huhiji-gakihi-futofi'
 
 def test_sars2_legacy_protein():
     result = konstel.generate('sars-cov-2-s-legacy.protein', f'{data_dir}/spike.prot.fa')
@@ -78,7 +78,7 @@ def test_sars2_legacy_genome():
 def test_stdin_generic_separator():
     sys.stdin = io.StringIO('ACGT')
     result = konstel.generate('generic.nucl', file='-')
-    assert result['id'] == 'bodafa-nojava-juzira-sopizu-sogiho-pukona-pukihi-dukubi-tobata'
+    assert result['id'] == 'bituzu-gupahu-zolodu-lumaki-suripi-rozitu-guhabi-figogo'
 
 
 

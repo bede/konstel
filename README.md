@@ -3,20 +3,25 @@
 [![Tests](https://img.shields.io/github/workflow/status/bede/konstel/tests)](https://github.com/bede/konstel/actions)
 [![PyPI](https://img.shields.io/pypi/v/konstel.svg?color=brightgreen)](https://badge.fury.io/py/konstel)
 
-
 **Not yet stable, proceed with caution**
 
-An extensible command line tool and library for generating memorable and pronounceable hash-based identifier schemes for sequences, biological or otherwise. For further details and my SARS-CoV-2 naming proposal, please read my [blog post](https://log.bede.im/2021/01/19/covid-hashes).
+An extensible command line tool and library for generating memorable and pronounceable hash-based identifier schemes for sequences, biological or otherwise. For further details and my SARS-CoV-2 naming proposal, please read my [blog post](https://log.bede.im/2021/01/19/covid-hashes). Requires Python 3.6+.
 
+### SARS-CoV-2 naming
+
+Phonemic and truncated cbase32 identifiers provide 36 and 40 bits of entropy respectively, producing no collisions within publicly deposited SARS-CoV-2 spike protein sequences as of 2021-04-12.
 
 ## Install
 
+Ideally inside a new virtualenv or conda environment:
+
 ```shell
-# Python >= 3.6
+# Latest release
 pip install konstel
 
-# Latest
-pip install git+https://github.com/bede/konstel
+# Development version
+git clone https://github.com/bede/konstel
+pip install --editable konstel
 ```
 
 
@@ -25,16 +30,16 @@ pip install git+https://github.com/bede/konstel
 ### Command line
 
 ```bash
-$ konstel gen sars-cov-2-s.genome konstel/tests/data/spike2.genome.fa --output table
+$ konstel gen sars-cov-2-s.genome konstel/tests/data/spike.genome.fa --output table
 scheme               sars-cov-2-s   
-hash                 S:w80qgz2k1fdds6x4mknxazm7psed5knd
-hash-4               S:w80q         
-id                   S:gofabil  
+hash                 S:0k8n9hjh5xh5kbef1k6ye7e2d4brhpry5r985avrtf69v6amrbc0
+hash-8               S:0k8n9hjh     
+id                   S:huhiji-gakihi  
 
 $ echo "ACGT" | konstel gen generic.nucl - --output table
 scheme               generic        
-hash                 4449jkgqyv6akzs3aaptjav527dger1m
-id                   bodafanoja      
+hash                 3qzkx17yf1vy0ssvd6xxvkt02973jvhzk51xv28cj6va16pvkbr0
+id                   bituzu-gupahu-zolodu-lumaki-suripi-rozitu-guhabi-figogo
 ```
 
 
@@ -43,5 +48,6 @@ id                   bodafanoja
 ```python
 >>> from konstel import konstel
 >>> konstel.generate('sars-cov-2-s.protein', 'konstel/tests/data/spike.prot.fa')
-{"scheme": "sars-cov-2-s", "hash": "S:c52gdyc7v1dfznny48hfkn1g8ax2yx8f", "hash-4": "S:c52g", "id": "S:dodidib"}
+{'scheme': 'sars-cov-2-s', 'hash': 'S:0k8n9hjh5xh5kbef1k6ye7e2d4brhpry5r985avrtf69v6amrbc0', 'hash-8': 'S:0k8n9hjh', 'id': 'S:huhiji-gakihi'}
 ```
+
