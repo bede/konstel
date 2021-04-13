@@ -32,7 +32,7 @@ $ konstel gen sars-cov-2-s.genome konstel/tests/data/spike.genome.fa --output ta
 scheme               sars-cov-2-s   
 hash                 S:0k8n9hjh5xh5kbef1k6ye7e2d4brhpry5r985avrtf69v6amrbc0
 hash-8               S:0k8n9hjh     
-id                   S:huhiji-gakihi  
+id                   S:huhijig-akihi  
 
 $ echo "ACGT" | konstel gen generic.nucl - --output table
 scheme               generic        
@@ -46,6 +46,6 @@ id                   bituzu-gupahu-zolodu-lumaki-suripi-rozitu-guhabi-figogo
 ```python
 >>> from konstel import konstel
 >>> konstel.generate('sars-cov-2-s.protein', 'konstel/tests/data/spike.prot.fa')
-{'scheme': 'sars-cov-2-s', 'hash': 'S:0k8n9hjh5xh5kbef1k6ye7e2d4brhpry5r985avrtf69v6amrbc0', 'hash-8': 'S:0k8n9hjh', 'id': 'S:huhiji-gakihi'}
+{'scheme': 'sars-cov-2-s', 'hash': 'S:0k8n9hjh5xh5kbef1k6ye7e2d4brhpry5r985avrtf69v6amrbc0', 'hash-8': 'S:0k8n9hjh', 'id': 'S:huhijig-akihi'}
 ```
 

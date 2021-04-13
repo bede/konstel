@@ -5,7 +5,7 @@ from math import ceil, log
 
 def base32(hash_b16):
     '''Returns lowercased RFC base32 encoding of a base16 hash'''
-    return base64.b32encode(bytes.fromhex(hash_b16)).decode().lower()
+    return base64.b32encode(bytes.fromhex(hash_b16)).decode().lower().rstrip('=')  # Remove padding
 
 
 def decode_base32(hash_base32):
@@ -17,7 +17,7 @@ def decode_base32(hash_base32):
 
 def cbase32(hash_b16):
     '''Returns lowercased Crockford's base32 encoding of a base16 hash'''
-    hash_b32 = base32(hash_b16).rstrip('=')  # Remove padding
+    hash_b32 = base32(hash_b16)
     base32_symbols = 'abcdefghijklmnopqrstuvwxyz234567'
     cbase32_symbols = '0123456789abcdefghjkmnpqrstvwxyz'
     base32_to_cbase32 = dict(zip(base32_symbols, cbase32_symbols))
