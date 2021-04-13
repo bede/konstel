@@ -151,7 +151,7 @@ def generate(scheme: str,
     :arg scheme: Scheme name; use {scheme}.{directive} if scheme specifies multiple directives
     :arg file: Input path or - for stdin
     :arg format: Input format; mandatory if scheme specifies multiple formats
-    :arg output: Output format (json, tsv, table)
+    :arg output: Output format for CLI (json, tsv, table)
     :arg length: Encoding length; overrides scheme
     :arg hide_prefix: Hide encoding prefix; overrides scheme
     '''

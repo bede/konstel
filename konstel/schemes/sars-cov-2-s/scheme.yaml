@@ -33,4 +33,4 @@ sars-cov-2-s:  # Cannot contain '.'
       prefix: 'S:'
       separator:
         character: '-'
-        interval: 6
+        interval: 7

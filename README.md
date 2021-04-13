@@ -3,13 +3,11 @@
 [![Tests](https://img.shields.io/github/workflow/status/bede/konstel/tests)](https://github.com/bede/konstel/actions)
 [![PyPI](https://img.shields.io/pypi/v/konstel.svg?color=brightgreen)](https://badge.fury.io/py/konstel)
 
-**Not yet stable, proceed with caution**
+An extensible command line tool and library for generating memorable and pronounceable hash-based identifier schemes for sequences, biological or otherwise. Requires Python 3.6+.
 
-An extensible command line tool and library for generating memorable and pronounceable hash-based identifier schemes for sequences, biological or otherwise. For further details and my SARS-CoV-2 naming proposal, please read my [blog post](https://log.bede.im/2021/01/19/covid-hashes). Requires Python 3.6+.
+### SARS-CoV-2 spike protein naming
 
-### SARS-CoV-2 naming
-
-Phonemic and truncated cbase32 identifiers provide 36 and 40 bits of entropy respectively, producing no collisions within publicly deposited SARS-CoV-2 spike protein sequences as of 2021-04-12.
+Phonemic and truncated cbase32 identifiers provide 36 and 40 bits of entropy respectively, collision-free for publicly deposited SARS-CoV-2 spike protein sequences as of 2021-04-12. Phonemic identifiers include six consonant-vowel pairs with a separator after the fourth consonant (e.g. `dazator-isaki`). The first segment provides an empirically established useful compromise of identifier length and low collision rate, while inclusion of the second segment achieves collision resistance. Longer identifiers still may be minted by overriding the scheme's default length profile. For my original SARS-CoV-2 naming proposal, please refer to my [blog post](https://log.bede.im/2021/01/19/covid-hashes).
 
 ## Install
 
