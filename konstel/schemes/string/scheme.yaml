@@ -1,0 +1,17 @@
+string:
+  description: Phonemic and cbase32 identifiers for arbitrary strings
+  version: 1.0.0
+  directives:
+    string:
+      formats:
+        - string  # Single fasta record or naked sequence
+  algorithm: sha256
+  encodings:
+    hash:
+      type: cbase32
+    id:
+      type: phonemes_16_4
+      length: 48
+      separator:
+        character: '-'
+        interval: 6

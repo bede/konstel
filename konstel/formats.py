@@ -10,6 +10,12 @@ alphabets = {
 }
 
 
+def string(string):
+	'''
+	Generic string format
+	'''
+	return str(string)
+
 def fasta(string):
 	'''
 	Returns uppercased sequence from fasta string

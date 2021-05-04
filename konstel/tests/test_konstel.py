@@ -24,7 +24,7 @@ def run(cmd, cwd='./'):  # Helper for CLI testing
 def test_validation_alphabet():
     sys.stdin = io.StringIO('ACGTX')
     with pytest.raises(RuntimeError):
-        konstel.generate('generic.nucl', file='-')
+        konstel.generate('bio.nuc', file='-')
 
 def test_sars2_generate_prot():
     result = konstel.generate('sars-cov-2-s.protein', f'{data_dir}/spike.prot.fa')
@@ -75,12 +75,15 @@ def test_sars2_legacy_genome():
     result = konstel.generate('sars-cov-2-s-legacy.genome', f'{data_dir}/spike.genome.fa')
     assert result['id'] == 'S:papoheme'
 
-def test_stdin_generic_separator():
+def test_stdin_bio_separator():
     sys.stdin = io.StringIO('ACGT')
-    result = konstel.generate('generic.nucl', file='-')
+    result = konstel.generate('bio.nuc', file='-')
     assert result['id'] == 'bituzu-gupahu-zolodu-lumaki-suripi-rozitu-guhabi-figogo'
 
-
+def test_stdin_string():
+    sys.stdin = io.StringIO('ACGT')
+    result = konstel.generate('string', file='-')
+    assert result['id'] == 'bituzu-gupahu-zolodu-lumaki-suripi-rozitu-guhabi-figogo'
 
 # def test_cli_json():
 #     cmd_run = run(f'konstel gen sars-cov-2-s.protein spike.prot.fa')

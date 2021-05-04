@@ -1,18 +1,18 @@
-generic:  # Cannot contain '.'
+bio:
   description: Phonemic and cbase32 identifiers for arbitrary biological sequences
   version: 1.0.0
   directives:
-    nucl:
+    nuc:
       formats:
         - fasta  # Single fasta record or naked sequence
       validate:
         alphabet: nucleotide
-    nucl-ambiguous:
+    nuc-ambiguous:
       formats:
         - fasta
       validate:
         alphabet: nucleotide-ambiguous
-    prot:
+    pro:
       formats:
         - fasta
       validate:
@@ -20,7 +20,7 @@ generic:  # Cannot contain '.'
   algorithm: sha256
   encodings:
     hash:
-      type: cbase32  # Crockford's base32
+      type: cbase32
     id:
       type: phonemes_16_4
       length: 48
