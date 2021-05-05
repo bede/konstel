@@ -25,11 +25,11 @@ sars-cov-2-s:  # Cannot contain '.'
   encodings:
     hash:  # An encoding named 'hash' is mandatory
       type: cbase32
-      length: 8  # 40 bits
+      length: 7  # 35 bits
       prefix: 'S:'
     id:  # 
       type: phonemes_16_4
-      length: 12  # 36 bits
+      length: 11  # 34 bits
       prefix: 'S:'
       separator:
         character: '-'

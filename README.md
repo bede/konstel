@@ -7,7 +7,7 @@ An extensible command line tool and library for generating memorable and pronoun
 
 ### SARS-CoV-2 spike protein naming
 
-Phonemic and truncated cbase32 identifiers provide 36 and 40 bits of entropy respectively, collision-free for publicly deposited SARS-CoV-2 spike protein sequences as of 2021-04-12. Phonemic identifiers include six consonant-vowel pairs with a separator after the fourth consonant (e.g. `dazator-isaki`). The first segment provides an empirically established useful compromise of identifier length and low collision rate, while inclusion of the second segment achieves collision resistance. Longer identifiers still may be minted by overriding the scheme's default length profile. For my original SARS-CoV-2 naming proposal, please refer to my [blog post](https://log.bede.im/2021/01/19/covid-hashes).
+Phonemic and truncated cbase32 identifiers provide 34 and 35 bits of entropy respectively, collision-free for publicly deposited SARS-CoV-2 spike protein sequences as of 2021-05-05. Phonemic identifiers include consonant-vowel pairs with a separator after the fourth consonant (e.g. `dazator-isak`). The first segment provides a useful compromise of identifier length and low collision rate, while inclusion of the second segment achieves collision resistance. Longer identifiers still may be minted by overriding the scheme's default length profile. For my original SARS-CoV-2 naming proposal, please refer to my [blog post](https://log.bede.im/2021/01/19/covid-hashes).
 
 ## Install
 

@@ -28,11 +28,11 @@ def test_validation_alphabet():
 
 def test_sars2_generate_prot():
     result = konstel.generate('sars-cov-2-s.protein', f'{data_dir}/spike.prot.fa')
-    assert result['id'] == 'S:huhijig-akihi'
+    assert result['id'] == 'S:huhijig-akih'
 
 def test_sars2_generate_nucl():
     result = konstel.generate('sars-cov-2-s.genome', f'{data_dir}/spike.genome.fa')
-    assert result['id'] == 'S:huhijig-akihi'
+    assert result['id'] == 'S:huhijig-akih'
 
 def test_sars2_generate_length():
     result = konstel.generate('sars-cov-2-s.protein', f'{data_dir}/spike.prot.fa', length=21)
@@ -41,19 +41,19 @@ def test_sars2_generate_length():
 def test_sars2_generate_stdin():
     with open(f'{data_dir}/spike.genome.fa') as sys.stdin:
         result = konstel.generate('sars-cov-2-s.genome', file='-')
-    assert result['id'] == 'S:huhijig-akihi'
+    assert result['id'] == 'S:huhijig-akih'
 
 def test_sars2_regen():
     result = konstel.regenerate('sars-cov-2-s', '0k8n9hjh5xh5kbef1k6ye7e2d4brhpry5r985avrtf69v6amrbc0')
-    assert result['id'] == 'S:huhijig-akihi'
+    assert result['id'] == 'S:huhijig-akih'
 
 def test_sars2_regen_directive():
     result = konstel.regenerate('sars-cov-2-s.protein', '0k8n9hjh5xh5kbef1k6ye7e2d4brhpry5r985avrtf69v6amrbc0')
-    assert result['id'] == 'S:huhijig-akihi'
+    assert result['id'] == 'S:huhijig-akih'
 
 def test_sars2_regen_prefix():
     result = konstel.regenerate('sars-cov-2-s', 'S:0k8n9hjh5xh5kbef1k6ye7e2d4brhpry5r985avrtf69v6amrbc0')
-    assert result['id'] == 'S:huhijig-akihi'
+    assert result['id'] == 'S:huhijig-akih'
 
 def test_sars2_legacy_regen():
     result = konstel.regenerate('sars-cov-2-s-legacy', 'mfcqn6mh3bnp7vv6eirptvbqik5c65ip')
