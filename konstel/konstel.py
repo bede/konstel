@@ -143,7 +143,8 @@ def generate(scheme: str,
              format: typing.Union[str, None] = None,
              output: str = 'json',
              length: int = 0,
-             hide_prefix: bool = False):
+             hide_prefix: bool = False,
+             sequence: str = ''):
     '''
     Generate identifier(s) for input file path or stdin according to the specified scheme
     Returns dict, and prints format specified in OUTPUT
@@ -154,6 +155,7 @@ def generate(scheme: str,
     :arg output: Output format for CLI (json, tsv, table)
     :arg length: Encoding length; overrides scheme
     :arg hide_prefix: Hide encoding prefix; overrides scheme
+    :arg sequence: Input string, overrides file
     '''
     scheme, directive, spec = load_scheme(scheme)
 
@@ -165,7 +167,9 @@ def generate(scheme: str,
             raise RuntimeError(f'Ambiguous format for directive {directive} of scheme {scheme}')
 
     # Validate, read and format input file or stdin
-    if file == '-':
+    if sequence:
+        string = sequence.strip()
+    elif file == '-':
         string = sys.stdin.read().strip()
     elif os.path.exists(file):
         string = pathlib.Path(file).read_text().strip()
