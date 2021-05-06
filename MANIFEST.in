@@ -1,2 +1,2 @@
-recursive-include *.fa
-recursive-include *.yaml
+recursive-include konstel/schemes *.fa
+recursive-include konstel/schemes *.yaml

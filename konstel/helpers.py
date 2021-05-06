@@ -12,7 +12,7 @@ def sars_cov_2_s_genome(genome):
     '''Returns translated SARS-CoV-2 spike sequence contained in nucleotide string'''
     try:
         ref_gene = str(SeqIO.read(
-            f'{PACKAGE_PATH}/schemes/sars-cov-2-s/assets/MN908947.3.S.fa', 'fasta').seq)
+            f'{PACKAGE_PATH}/schemes/assets/sars-cov-2-s/MN908947.3.S.fa', 'fasta').seq)
         result = parasail.sg_qx_trace(ref_gene, genome, 10, 1, parasail.dnafull)
         aln_start = result.traceback.query.rfind(ref_gene)
         aln_end = aln_start + len(ref_gene)

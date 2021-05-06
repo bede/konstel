@@ -19,6 +19,7 @@ setup(
     packages=['konstel'],
     include_package_data=True,  # MANIFEST.in
     python_requires='>=3.6',
+    zip_safe=False,
     install_requires=[
         'defopt>=6.1.0',
         'strictyaml>=1.4.0',

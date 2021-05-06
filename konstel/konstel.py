@@ -21,9 +21,7 @@ def load_scheme(scheme, validate_directive=True):
     ''''''
     PACKAGE_PATH = os.path.dirname(__file__)
     scheme, _, directive = scheme.partition('.')
-
-    # Load scheme specification
-    yaml_path = pathlib.Path(f'{PACKAGE_PATH}/schemes/{scheme}/scheme.yaml')
+    yaml_path = pathlib.Path(f'{PACKAGE_PATH}/schemes/{scheme}.yaml')
     if not os.path.exists(yaml_path):
         raise FileNotFoundError(f'Failed to open specification for scheme {scheme}')
     spec = schema.load_scheme(yaml_path.read_text()).data
