@@ -4,6 +4,21 @@ import defopt
 
 from konstel import konstel
 
+import konstel.encodings as encodings
+
+
+def encode(string: str,
+           separator: str = '-',
+           interval: int = 6):
+    '''
+    Generates phonemic encoding of arbitrary strings
+
+    :arg string: Input string
+    :arg separator: Separator character
+    :arg interval: Interval at which the separator character is inserted
+    '''
+    print(konstel.encode(string, separator, interval))
+
 
 def generate(scheme: str,
              file: str,
@@ -46,5 +61,7 @@ def regenerate(scheme: str,
 
 def main():
     defopt.run(
-        {'gen': generate, 'regen': regenerate},
+        {'encode': encode,
+         'gen': generate,
+         'regen': regenerate},
         strict_kwonly=False, no_negated_flags=True)

@@ -20,7 +20,7 @@ sars-cov-2-s:  # Cannot contain '.'
         - fasta
       validate:
         alphabet: nucleotide-ambiguous
-      helper: True
+      helper: True  # Uses konstel.konstel.helpers.sars_cov_2_s_genome()
   algorithm: sha256
   encodings:
     hash:  # An encoding named 'hash' is mandatory

@@ -4,14 +4,14 @@ string:
   directives:
     string:
       formats:
-        - string  # Single fasta record or naked sequence
+        - string
   algorithm: sha256
   encodings:
     hash:
       type: cbase32
     id:
       type: phonemes_16_4
-      length: 48
+      length: 48  # Full SHA256 is 84
       separator:
         character: '-'
         interval: 6

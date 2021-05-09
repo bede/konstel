@@ -136,6 +136,18 @@ def format_encodings(outputs, output_type='dict'):
         return outputs_fmt
 
 
+def encode(string, separator='-', interval=6):
+    '''
+    Returns default phonemic encoding of arbitrary string
+    '''
+    encoding = encodings.phonemes_16_4(string.encode().hex())
+    separated_chars = []
+    for i in range(0, len(encoding), interval):
+        separated_chars.append(encoding[i:i+interval])
+    encoding_fmt = separator.join(separated_chars)
+    return encoding_fmt
+
+
 def generate(scheme: str,
              file: str,
              format: typing.Union[str, None] = None,
@@ -144,8 +156,7 @@ def generate(scheme: str,
              hide_prefix: bool = False,
              sequence: str = ''):
     '''
-    Generate identifier(s) for input file path or stdin according to the specified scheme
-    Returns dict, and prints format specified in OUTPUT
+    Returns dict of identifier(s) for input file path or stdin according to the specified scheme
 
     :arg scheme: Scheme name; use {scheme}.{directive} if scheme specifies multiple directives
     :arg file: Input path or - for stdin

@@ -94,30 +94,3 @@ def phonemes_16_4(hash_b16, result_len=None, phonemes=None):
 #         c, v = int(window[:4], 2), int(window[4:], 2)
 #         word += f'{consonant_map[c]}{vowel_map[v]}'
 #     return word
-
-
-# def phonemes_16_4_bits_old(hash_b16, result_len=None):
-#     '''
-#     Returns word comprising consonant-vowel phonemes from a base16 hash
-#     Maps 16 consonants and 4 vowels to six bit windows of hash
-#     3 bits per character
-
-#     Uses bit-wise logic to calculate which phonemes are which.
-#     '''
-#     phonemes = [''.join(i) for i in itertools.product('bdfghjklmnprstvz', 'aiou')]
-#     phoneme_bit_size = log2(len(phonemes))
-#     assert phoneme_bit_size.is_integer(), 'Must have a power of two number of phonemes'
-
-#     hash_b2 = int(hash_b16.hexdigest(), 16)
-
-#     if result_len is None:
-#         result_len = int(8 * hash_b16.digest_size / phoneme_bit_size)
-#     front_offset = int(phoneme_bit_size * result_len - phoneme_bit_size)
-#     mask = (2 ** int(phoneme_bit_size) - 1) << front_offset
-
-#     word = ''
-#     for _ in range(result_len):
-#         phoneme_num = (hash_b2 & mask) >> front_offset
-#         word += phonemes[phoneme_num]
-#         hash_b2 = hash_b2 << int(phoneme_bit_size)
-#     return word
