@@ -7,6 +7,8 @@ sars-cov-2-s-legacy:  # Cannot contain '.'
       formats:
         - fasta  # Single fasta record, with or without header
       prepare:
+        remove_characters:
+          - '-'
         strip_characters:
           - '*'  # Remove terminal stops
       validate:
@@ -18,6 +20,9 @@ sars-cov-2-s-legacy:  # Cannot contain '.'
       target: protein
       formats:
         - fasta
+      prepare:
+        remove_characters:
+          - '-'
       validate:
         alphabet: nucleotide-ambiguous
       helper: True

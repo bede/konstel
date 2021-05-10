@@ -30,6 +30,7 @@ def load_scheme(yaml_text):
                     'formats': Seq(Enum(FORMATS)),
                     Optional('prepare'): Map({
                         Optional('remove_whitespace', default=False): Bool(),
+                        Optional('remove_characters', default=['']): Seq(Str()),
                         Optional('strip_characters', default=['']): Seq(Str()),
                     }),
                     Optional('validate'): Map({

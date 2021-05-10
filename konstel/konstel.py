@@ -5,6 +5,8 @@ import typing
 import hashlib
 import pathlib
 
+from string import whitespace as whitespace
+
 import defopt
 
 from Bio import SeqIO
@@ -44,9 +46,14 @@ def load_scheme(scheme, validate_directive=True):
 
 
 def prepare(string, spec):
-    ''''''
-    if spec['remove_whitespace']:
-        string = string.translate(str.maketrans('', '', ' \n\t\r'))
+    '''
+    Carry out pre-hashing normalisation. Terminal unicode whitespace removed with str.strip()
+    '''
+    if spec['remove_whitespace']:  # ASCII whitespace only
+        string = string.translate(str.maketrans('', '', whitespace))
+    if any(spec['remove_characters']):  # any() since schema default [''] is truthy
+        for c in spec['remove_characters']:
+            string = string.replace(c, '')
     if any(spec['strip_characters']):  # any() since schema default [''] is truthy
         string = string.strip(''.join(spec['strip_characters']))
     return string

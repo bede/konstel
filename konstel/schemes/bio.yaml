@@ -5,16 +5,28 @@ bio:
     nuc:
       formats:
         - fasta  # Single fasta record or naked sequence
+      prepare:
+        remove_whitespace: True
+        remove_characters:
+          - '-'
       validate:
         alphabet: nucleotide
     nuc-ambiguous:
       formats:
         - fasta
+      prepare:
+        remove_whitespace: True
+        remove_characters:
+          - '-'
       validate:
         alphabet: nucleotide-ambiguous
     pro:
       formats:
         - fasta
+      prepare:
+        remove_whitespace: True
+        remove_characters:
+          - '-'
       validate:
         alphabet: protein
   algorithm: sha256

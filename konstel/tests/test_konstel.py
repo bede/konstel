@@ -85,6 +85,12 @@ def test_stdin_string():
     result = konstel.generate('string', file='-')
     assert result['id'] == 'bituzu-gupahu-zolodu-lumaki-suripi-rozitu-guhabi'
 
-# def test_cli_json():
-#     cmd_run = run(f'konstel gen sars-cov-2-s.protein spike.prot.fa')
-#     assert json.loads(cmd_run.stdout) == {"scheme": "sars-cov-2-s", "hash": "S:c52gdyc7v1dfznny48hfkn1g8ax2yx8f", "hash-4": "S:c52g", "id": "S:dodidib"}
+def test_direct_string_input():
+    result = konstel.generate('string','-', sequence='ACGT')
+    assert result['id'] == 'bituzu-gupahu-zolodu-lumaki-suripi-rozitu-guhabi'
+
+def test_bio_normalisation():
+    result1 = konstel.generate('bio.nuc','-', sequence='ACGT')
+    result2 = konstel.generate('bio.nuc','-', sequence='A-\nC G\tT')
+    assert result1['id'] == 'bituzu-gupahu-zolodu-lumaki-suripi-rozitu-guhabi'
+    assert result1['id'] == result2['id']

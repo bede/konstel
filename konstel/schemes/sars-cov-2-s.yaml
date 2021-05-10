@@ -7,6 +7,9 @@ sars-cov-2-s:  # Cannot contain '.'
       formats:
         - fasta  # Single fasta record, with or without header
       prepare:
+        remove_whitespace: True
+        remove_characters:
+          - '-'
         strip_characters:
           - '*'  # Remove terminal stops
       validate:
@@ -18,6 +21,10 @@ sars-cov-2-s:  # Cannot contain '.'
       target: protein
       formats:
         - fasta
+      prepare:
+        remove_whitespace: True
+        remove_characters:
+          - '-'
       validate:
         alphabet: nucleotide-ambiguous
       helper: True  # Uses konstel.konstel.helpers.sars_cov_2_s_genome()
