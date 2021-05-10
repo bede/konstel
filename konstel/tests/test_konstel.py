@@ -78,12 +78,12 @@ def test_sars2_legacy_genome():
 def test_stdin_bio_separator():
     sys.stdin = io.StringIO('ACGT')
     result = konstel.generate('bio.nuc', file='-')
-    assert result['id'] == 'bituzu-gupahu-zolodu-lumaki-suripi-rozitu-guhabi-figogo'
+    assert result['id'] == 'bituzu-gupahu-zolodu-lumaki-suripi-rozitu-guhabi'
 
 def test_stdin_string():
     sys.stdin = io.StringIO('ACGT')
     result = konstel.generate('string', file='-')
-    assert result['id'] == 'bituzu-gupahu-zolodu-lumaki-suripi-rozitu-guhabi-figogo'
+    assert result['id'] == 'bituzu-gupahu-zolodu-lumaki-suripi-rozitu-guhabi'
 
 # def test_cli_json():
 #     cmd_run = run(f'konstel gen sars-cov-2-s.protein spike.prot.fa')

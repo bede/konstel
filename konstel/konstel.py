@@ -116,9 +116,9 @@ def generate_encodings(hash_b16, spec, length, hide_prefix):
             char = spec[name]['separator']['character']
             interval = spec[name]['separator']['interval']
             separated_chars = []
-            for i in range(0, len(encodings_fmt[name])-2, interval):
-                separated_chars.append(encodings_fmt[name][i+len(prefix):i+len(prefix)+interval])
-            encodings_fmt[name] = prefix + char.join(separated_chars)
+            for i in range(0, len(encodings_fmt[name]), interval):
+                separated_chars.append(encodings_fmt[name][i+len(prefix):len(prefix)+i+interval])
+            encodings_fmt[name] = prefix + char.join(filter(None, separated_chars))
 
     return encodings_fmt
 
@@ -144,7 +144,7 @@ def encode(string, separator='-', interval=6):
     separated_chars = []
     for i in range(0, len(encoding), interval):
         separated_chars.append(encoding[i:i+interval])
-    encoding_fmt = separator.join(separated_chars)
+    encoding_fmt = separator.join(filter(None, separated_chars))
     return encoding_fmt
 
 
