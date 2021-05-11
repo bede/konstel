@@ -1,6 +1,6 @@
 sars-cov-2-s-legacy:  # Cannot contain '.'
   description: Phonemic and base32 identifiers for SARS-CoV-2 spike protein sequences
-  version: 1.0.0
+  version: 1.1.0
   directives:
     protein:
       description: SARS-CoV-2 spike protein sequence
