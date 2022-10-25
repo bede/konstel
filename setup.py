@@ -18,7 +18,7 @@ setup(
     license="LICENSE",
     packages=["konstel"],
     include_package_data=True,  # MANIFEST.in
-    python_requires=">=3.6",
+    python_requires=">=3.9",
     zip_safe=False,
     install_requires=[
         "defopt==6.4.0",
