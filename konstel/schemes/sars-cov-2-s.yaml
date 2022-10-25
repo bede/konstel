@@ -34,7 +34,7 @@ sars-cov-2-s:  # Cannot contain '.'
       type: cbase32
       length: 7  # 35 bits
       prefix: 'S:'
-    id:  # 
+    id:  #
       type: phonemes_16_4
       length: 11  # 34 bits
       prefix: 'S:'

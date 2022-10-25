@@ -7,26 +7,26 @@ from konstel import konstel
 import konstel.encodings as encodings
 
 
-def encode(string: str,
-           separator: str = '-',
-           interval: int = 6):
-    '''
+def encode(string: str, separator: str = "-", interval: int = 6):
+    """
     Generates phonemic encoding of arbitrary strings
 
     :arg string: Input string
     :arg separator: Separator character
     :arg interval: Interval at which the separator character is inserted
-    '''
+    """
     print(konstel.encode(string, separator, interval))
 
 
-def generate(scheme: str,
-             file: str,
-             format: typing.Union[str, None] = None,
-             output: str = 'json',
-             length: int = 0,
-             hide_prefix: bool = False):
-    '''
+def generate(
+    scheme: str,
+    file: str,
+    format: typing.Union[str, None] = None,
+    output: str = "json",
+    length: int = 0,
+    hide_prefix: bool = False,
+):
+    """
     Generate identifier(s) for input file path or stdin according to the specified scheme
     Returns dict, and prints format specified in OUTPUT
 
@@ -36,17 +36,19 @@ def generate(scheme: str,
     :arg output: Output format (json, tsv, table)
     :arg length: Encoding length; overrides scheme
     :arg hide_prefix: Hide encoding prefix; overrides scheme
-    '''
+    """
     outputs = konstel.generate(scheme, file, format, output, length, hide_prefix)
     print(konstel.format_encodings(outputs, output))
 
 
-def regenerate(scheme: str,
-               hash_string: str,
-               output: str = 'json',
-               length: int = None,
-               hide_prefix: bool = False):
-    '''
+def regenerate(
+    scheme: str,
+    hash_string: str,
+    output: str = "json",
+    length: int = None,
+    hide_prefix: bool = False,
+):
+    """
     Regenerate identifier(s) for an existing full length hash according to the specified scheme
 
     :arg scheme: Scheme name
@@ -54,14 +56,14 @@ def regenerate(scheme: str,
     :arg output: Output format (dict, tsv or table)
     :arg length: Encoding length (overrides scheme)
     :arg hide_prefix: Hide encoding prefix (overrides scheme)
-    '''
+    """
     outputs = konstel.regenerate(scheme, hash_string, output, length, hide_prefix)
     print(konstel.format_encodings(outputs, output))
 
 
 def main():
     defopt.run(
-        {'encode': encode,
-         'gen': generate,
-         'regen': regenerate},
-        strict_kwonly=False, no_negated_flags=True)
+        {"encode": encode, "gen": generate, "regen": regenerate},
+        strict_kwonly=False,
+        no_negated_flags=True,
+    )
