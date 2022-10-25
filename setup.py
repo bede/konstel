@@ -21,10 +21,10 @@ setup(
     python_requires='>=3.6',
     zip_safe=False,
     install_requires=[
-        'defopt>=6.1.0',
-        'strictyaml>=1.4.0',
-        'biopython>=1.78',
-        'parasail==1.2.4'],
+        'defopt==6.4.0',
+        'strictyaml==1.6.2',
+        'biopython==1.79',
+        'parasail==1.3.3'],
     entry_points = {
         'console_scripts':['konstel=konstel.cli:main']},
     classifiers=[
