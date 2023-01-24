@@ -1,7 +1,7 @@
 # Konstel(lations)
 
-[![Tests](https://img.shields.io/github/workflow/status/bede/konstel/tests)](https://github.com/bede/konstel/actions)
-[![PyPI](https://img.shields.io/pypi/v/konstel.svg?color=brightgreen)](https://badge.fury.io/py/konstel)
+[![Tests](https://img.shields.io/github/actions/workflow/status/bede/konstel/test.yml?branch=master)](https://github.com/bede/konstel/actions)
+[![PyPI](https://img.shields.io/pypi/v/konstel.svg?color=brightgreen)](https://pypi.org/project/konstel)
 
 An extensible command line tool, library, and accompanying [web app](https://konstel.ew.r.appspot.com) for generating memorable and pronounceable hash-based identifiers for arbitrary sequences. Konstel normalises and hashes a given string, biological sequence or SARS-CoV-2 sequence before encoding the hash digest as a human-friendly phonemic word. This allows privacy preserving confirmation of input equality and can be thought of as the nomenclature equivalent of URL shortening. In the context of an emerging infectious disease outbreak like SARS-CoV-2, this approach can alleviate some of the challenges imposed restrictive data access agreements – I can tell that my sequence is the same as yours without you having to share it with me. Requires Python 3.6+. Presented at ABPHM '21.
 
