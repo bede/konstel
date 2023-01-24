@@ -31,7 +31,7 @@ Arbitrary string
 
 ```bash
 $ echo "test" | konstel gen string -  # Uses '-' to accept stdin
-{"scheme": "string", "hash": "ky3d10c89hypb6hfxagcappg2phvykrv5c5r4b6hbnp1bc7g1840", "id": "fizodo-tafado-fahudu-tinino-mozupo-pagaji-kotabi"}
+{"scheme": "string", "hash": "ky3d10c89hypwb6hfxagcappg2phvykrv5c5r4b6hbnp1bc7g1840", "id": "fizodo-tafado-fahudu-tinino-mozupo-pagaji-kotabi"}
 
 $ echo "test" | konstel gen string --length 6 --output table -  # Custom length, tabular output
 scheme               string

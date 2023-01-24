@@ -20,7 +20,7 @@ def sars_cov_2_s_genome(genome):
         aln_start = result.traceback.query.rfind(ref_gene)
         aln_end = aln_start + len(ref_gene)
         gene = Seq(result.traceback.ref[aln_start:aln_end])
-        protein = str(gene.ungap().translate()).strip("*")
+        protein = str(gene.replace("-", "").translate()).strip("*")
     except Exception as e:
         raise RuntimeError("Problem extracting spike sequence").with_traceback(
             e.__traceback__
@@ -38,7 +38,7 @@ def sars_cov_2_s_legacy_genome(nuc_sequence):
         s_start_pos = str(seq).lower().index(s_start_seq)
         s_end_pos = str(seq).lower().index(s_end_seq) + len(s_end_seq)
         spike_nucl = seq[s_start_pos:s_end_pos]
-        spike_prot = str(spike_nucl.ungap().translate()).strip("*")
+        spike_prot = str(spike_nucl.replace("-", "").translate()).strip("*")
     except Exception as e:
         raise RuntimeError("Problem extracting spike sequence").with_traceback(
             e.__traceback__
